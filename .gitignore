@@ -8,7 +8,7 @@ package-lock.json
 node_modules
 
 # build generated
-build
+# build
 
 junit.xml
 coverage
