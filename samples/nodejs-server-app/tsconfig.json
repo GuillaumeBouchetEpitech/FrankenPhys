@@ -1,0 +1,8 @@
+
+{
+    "extends": "../base-tsconfig.json",
+    "include": [
+        "./src/main.ts"
+    ],
+    "exclude": ["./dist"]
+}
