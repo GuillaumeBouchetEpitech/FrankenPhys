@@ -16,6 +16,7 @@ const asyncRun = async () => {
   // ready
 
   const physicWorld = new physics.PhysicWorld();
+  physicWorld.activateDebugLogs();
   physicWorld.setGravity(0,0,-10);
 
   const allContactEvents = new Set<number>();
@@ -35,8 +36,9 @@ const asyncRun = async () => {
   const fallingSphereBody = physicWorld.createRigidBody({
     mass: 1, // dynamic
     shape: { type: 'sphere', radius: 1 },
+    position: [0,0,10],
+    orientation: [0, 0,0,1],
   });
-  fallingSphereBody.setPosition(0, 0, 10);
   fallingSphereBody.setFriction(1);
   fallingSphereBody.disableDeactivation();
 
@@ -44,8 +46,9 @@ const asyncRun = async () => {
   const groundBoxBody = physicWorld.createRigidBody({
     mass: 0, // static
     shape: { type: 'box', size: [2,2,2] },
+    position: [0,0,-1],
+    orientation: [0, 0,0,1],
   });
-  groundBoxBody.setPosition(0, 0, -1);
   groundBoxBody.setFriction(1);
   groundBoxBody.disableDeactivation();
 

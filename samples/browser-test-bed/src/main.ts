@@ -25,6 +25,7 @@ window.onload = async () => {
   // ready
 
   const physicWorld = new physics.PhysicWorld();
+  physicWorld.activateDebugLogs();
 
   //
   // simulate
@@ -164,10 +165,10 @@ function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld)
     shape: {
       type: 'box',
       size: [32,32,2]
-    }
+    },
+    position: [-6,0,-4],
+    orientation: [+Math.PI / 80, 0,1,0]
   });
-  staticBoxA.setPosition(-6,0,-4);
-  staticBoxA.setRotation(0,1,0, -Math.PI / 80);
   staticBoxA.setFriction(0.1);
 
   const staticBoxB = physicWorld.createRigidBody({
@@ -175,25 +176,14 @@ function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld)
     shape: {
       type: 'box',
       size: [32,32,2]
-    }
+    },
+    position: [17,0,-7],
+    orientation: [0, 0,0,1]
   });
-  staticBoxB.setPosition(17,0,-7);
-  // staticBoxB.setRotation(0,1,0, -Math.PI * 1.5);
   staticBoxB.setFriction(0.1);
-
-  const staticBoxC = physicWorld.createRigidBody({
-    mass: 0,
-    shape: {
-      type: 'box',
-      size: [20,10,1]
-    }
-  });
-  staticBoxC.setPosition(10,-20,0);
-  staticBoxC.setFriction(0.1);
 
   const material = getTextureMaterial();
   const geometryAB = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
-  const geometryC = new THREE.BoxGeometry( 20.0, 10.0, 1.0 );
 
   const boxMeshA = new THREE.Mesh( geometryAB, material );
   boxMeshA.castShadow = true;
@@ -205,15 +195,9 @@ function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld)
   boxMeshB.receiveShadow = true;
   scene.add( boxMeshB );
 
-  const boxMeshC = new THREE.Mesh( geometryC, material );
-  boxMeshC.castShadow = true;
-  boxMeshC.receiveShadow = true;
-  scene.add( boxMeshC );
-
   return function syncRenderedStaticBox() {
     _syncMeshWithRigidBody(boxMeshA, staticBoxA);
     _syncMeshWithRigidBody(boxMeshB, staticBoxB);
-    _syncMeshWithRigidBody(boxMeshC, staticBoxC);
   }
 }
 
@@ -244,9 +228,10 @@ function renderDynamicPyramid(scene: THREE.Scene, physicWorld: physics.PhysicWor
           vertices[triIndex[2]]
         ]
       }).map(val => ([val[0], val[1], val[2]])),
-    }
+    },
+    position: [pos[0], pos[1], pos[2]],
+    orientation: [0, 0,0,1]
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(0.1);
   body.disableDeactivation();
 
@@ -277,8 +262,9 @@ function renderDynamicSphere(scene: THREE.Scene, physicWorld: physics.PhysicWorl
       type: 'sphere',
       radius: 1
     },
+    position: [pos[0], pos[1], pos[2]],
+    orientation: [0, 0,0,1],
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(1);
   body.disableDeactivation();
 
@@ -304,8 +290,9 @@ function renderDynamicBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld, 
       type: 'box',
       size: [2,2,2]
     },
+    position: [pos[0], pos[1], pos[2]],
+    orientation: [0, 0,0,1],
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(0.1);
   body.disableDeactivation();
 
@@ -334,8 +321,9 @@ function renderDynamicCylinder(scene: THREE.Scene, physicWorld: physics.PhysicWo
       radius,
       length
     },
+    position: [pos[0], pos[1], pos[2]],
+    orientation: [0, 0,0,1],
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(1);
   body.disableDeactivation();
 
@@ -364,8 +352,9 @@ function renderDynamicCapsule(scene: THREE.Scene, physicWorld: physics.PhysicWor
       radius,
       length
     },
+    position: pos,
+    orientation: [0, 0,0,1],
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(1);
   body.disableDeactivation();
 
@@ -391,8 +380,8 @@ function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.PhysicWo
       shapes: [
         {
           // boxX
-          position: glm.vec3.fromValues(1,0,0),
-          orientation: glm.quat.fromValues(0,0,1, 0),
+          position: [1,0,0],
+          orientation: [0, 0,0,1],
           shape: {
             type: 'box',
             size: [4,1,1]
@@ -400,8 +389,8 @@ function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.PhysicWo
         },
         {
           // boxY
-          position: glm.vec3.fromValues(0,1,0),
-          orientation: glm.quat.fromValues(0,0,1, 0),
+          position: [0,1,0],
+          orientation: [0, 0,0,1],
           shape: {
             type: 'box',
             size: [1,4,1]
@@ -409,8 +398,8 @@ function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.PhysicWo
         },
         {
           // boxZ
-          position: glm.vec3.fromValues(0,0,1),
-          orientation: glm.quat.fromValues(0,0,1, 0),
+          position: [0,0,1],
+          orientation: [0, 0,0,1],
           shape: {
             type: 'box',
             size: [1,1,4]
@@ -418,8 +407,9 @@ function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.PhysicWo
         },
       ],
     },
+    position: pos,
+    orientation: [0, 0,0,1],
   });
-  body.setPosition(pos[0], pos[1], pos[2]);
   body.setFriction(0.1);
   body.disableDeactivation();
 
@@ -468,41 +458,61 @@ function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.PhysicWo
 
 function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
 
-  const bodyDefA: physics.PhysicBodyDef = {
+  const originX = -5;
+
+  const bodyA = physicWorld.createRigidBody({
     mass: 1,
     shape: {
       type: 'box',
       size: [2,0.5,1]
     },
-  };
-  const bodyDefB: physics.PhysicBodyDef = {
+    position: [originX, 3,5],
+    orientation: [0, 0,0,1]
+  });
+  bodyA.setFriction(0.1);
+
+  const bodyB = physicWorld.createRigidBody({
     mass: 1,
     shape: {
       type: 'box',
       size: [2,1,0.5]
     },
-  };
-
-  const originX = -5;
-
-  const bodyA = physicWorld.createRigidBody(bodyDefA);
-  bodyA.setPosition(originX, 3, 5);
-  bodyA.setFriction(0.1);
-
-  const bodyB = physicWorld.createRigidBody(bodyDefB);
-  bodyB.setPosition(originX+2, 3, 5);
+    position: [originX+2, 3,5],
+    orientation: [0, 0,0,1]
+  });
   bodyB.setFriction(0.1);
 
-  const bodyC = physicWorld.createRigidBody(bodyDefA);
-  bodyC.setPosition(originX+4, 3, 5);
+  const bodyC = physicWorld.createRigidBody({
+    mass: 1,
+    shape: {
+      type: 'box',
+      size: [2,0.5,1]
+    },
+    position: [originX+4, 3,5],
+    orientation: [0, 0,0,1]
+  });
   bodyC.setFriction(0.1);
 
-  const bodyD = physicWorld.createRigidBody(bodyDefB);
-  bodyD.setPosition(originX+6, 3, 5);
+  const bodyD = physicWorld.createRigidBody({
+    mass: 1,
+    shape: {
+      type: 'box',
+      size: [2,1,0.5]
+    },
+    position: [originX+6, 3,5],
+    orientation: [0, 0,0,1]
+  });
   bodyD.setFriction(0.1);
 
-  const bodyE = physicWorld.createRigidBody(bodyDefA);
-  bodyE.setPosition(originX+8, 3, 5);
+  const bodyE = physicWorld.createRigidBody({
+    mass: 1,
+    shape: {
+      type: 'box',
+      size: [2,0.5,1]
+    },
+    position: [originX+8, 3,5],
+    orientation: [0, 0,0,1]
+  });
   bodyE.setFriction(0.1);
 
   const _makeConstraint = (bodyA: physics.IPhysicBody, bodyB: physics.IPhysicBody) => {
@@ -567,20 +577,66 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
 
 function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld): (deltaTimeSec: number) => void {
 
-  const bodyDefChassis: physics.PhysicBodyDef = {
-    mass: 10,
-    shape: {
-      type: 'box',
-      size: [4.0,2.0,0.5]
-    },
-  };
-
   const originX = +10;
   const originY = -20;
 
-  const bodyMain = physicWorld.createRigidBody(bodyDefChassis);
-  bodyMain.setPosition(originX, originY, 5);
-  bodyMain.setFriction(0.1);
+  const toSync: ((deltaTimeSec: number) => void)[] = [];
+
+  const material = getTextureMaterial();
+
+  const bodyStaticGround = physicWorld.createRigidBody({
+    mass: 0,
+    shape: {
+      type: 'box',
+      size: [20,20,1]
+    },
+    position: [originX,originY, 0],
+    orientation: [0, 0,0,1]
+  });
+  bodyStaticGround.setFriction(10.0);
+
+  const geometryStaticGround = new THREE.BoxGeometry( 20.0, 20.0, 1.0 );
+
+  const boxMeshStaticGround = new THREE.Mesh( geometryStaticGround, material );
+  boxMeshStaticGround.castShadow = true;
+  boxMeshStaticGround.receiveShadow = true;
+  scene.add( boxMeshStaticGround );
+
+  toSync.push(() => {
+    _syncMeshWithRigidBody(boxMeshStaticGround, bodyStaticGround);
+  });
+
+  //
+  //
+  //
+  //
+  //
+
+  const mainBoxSize: glm.ReadonlyVec3 = [2,2,2];
+
+  const bodyDefMain: physics.PhysicBodyDef = {
+    mass: 1,
+    shape: {
+      type: 'box',
+      size: mainBoxSize
+    },
+    position: [originX, originY, 5],
+    orientation: [0, 0,0,1]
+  };
+
+  const bodyMain = physicWorld.createRigidBody(bodyDefMain);
+  bodyMain.setFriction(10.0);
+
+  const geometryBody = new THREE.BoxGeometry(mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]);
+
+  const meshMain = new THREE.Mesh( geometryBody, material );
+  meshMain.castShadow = true;
+  meshMain.receiveShadow = true;
+  scene.add( meshMain );
+
+  toSync.push(() => {
+    _syncMeshWithRigidBody(meshMain, bodyMain);
+  });
 
   //
   //
@@ -591,29 +647,112 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     posForeleg: glm.ReadonlyVec3,
     pivotInA: glm.ReadonlyVec3,
     pivotInB: glm.ReadonlyVec3,
-    reverse: boolean = false
+    isLeftLeg: boolean,
+    isBackLeg: boolean,
   ) => {
 
+    const bodyDefLegBase: physics.PhysicBodyDef = {
+      mass: 0.01,
+      shape: {
+        type: 'sphere',
+        radius: 0.5,
+      },
+      position: posLeg,
+      orientation: [0, 0,0,1],
+    };
+
     const bodyDefLeg: physics.PhysicBodyDef = {
-      mass: 1.0,
+      mass: 0.01,
       shape: {
         type: 'box',
         size: [2.0,0.5,0.5]
       },
+      position: posLeg,
+      orientation: [0, 0,0,1],
     };
 
+    const bodyDefForeleg: physics.PhysicBodyDef = {
+      mass: 0.01,
+      shape: {
+        // type: 'box',
+        // size: [2.0,0.5,0.5]
+        type: 'compound',
+        shapes: [
+          {
+            position: [0,0,0],
+            orientation: [0, 0,0,1],
+            shape: {
+              type: 'box',
+              size: [2.0,0.5,0.5]
+            }
+          },
+          {
+            position: [isBackLeg ? -1 : +1,0,0],
+            orientation: [0.25 * Math.PI, 0,0,1],
+            shape: {
+              // type: 'sphere',
+              // radius: 0.25
+              type: 'box',
+              size: [0.25,1,1]
+              // size: [0.25,1,0.25]
+            }
+          },
+          // {
+          //   position: [isBackLeg ? -1 : +1,0,0],
+          //   orientation: [0.25 * Math.PI, 0,0,1],
+          //   shape: {
+          //     // type: 'sphere',
+          //     // radius: 0.25
+          //     type: 'box',
+          //     size: [0.25,0.25,1]
+          //   }
+          // },
+        ]
+      },
+      position: posForeleg,
+      orientation: [0, 0,0,1],
+    };
+
+    const bodyLegBase = physicWorld.createRigidBody(bodyDefLegBase);
+    // bodyLegBase.setPosition(posLeg[0], posLeg[1], posLeg[2]);
+    bodyLegBase.setFriction(10.0);
+
     const bodyLeg = physicWorld.createRigidBody(bodyDefLeg);
-    bodyLeg.setPosition(posLeg[0], posLeg[1], posLeg[2]);
-    bodyLeg.setFriction(0.1);
+    // bodyLeg.setPosition(posLeg[0], posLeg[1], posLeg[2]);
+    bodyLeg.setFriction(10.0);
 
-    const bodyForeleg = physicWorld.createRigidBody(bodyDefLeg);
-    bodyForeleg.setPosition(posForeleg[0], posForeleg[1], posForeleg[2]);
-    bodyForeleg.setFriction(0.1);
+    const bodyForeleg = physicWorld.createRigidBody(bodyDefForeleg);
+    // bodyForeleg.setPosition(posForeleg[0], posForeleg[1], posForeleg[2]);
+    bodyForeleg.setFriction(10.0);
 
-    const constraintBodyLeg = physicWorld.createHingeConstraint({
+    // const bodyFoot = physicWorld.createRigidBody({
+    //   mass: 0.01,
+    //   shape: {
+    //     type: 'sphere',
+    //     radius: 0.6
+    //     // type: 'box',
+    //     // size: [0.6,0.6,0.6]
+    //   },
+    //   position: [posForeleg[0] + 1, posForeleg[1], posForeleg[2]],
+    //   orientation: [0, 0,0,1],
+    // });
+    // // bodyFoot.setPosition(1000, 0, 0);
+    // bodyFoot.setFriction(1.0);
+
+    const constraintBodyLegBase = physicWorld.createHingeConstraint({
       bodyA: bodyMain,
-      bodyB: bodyLeg,
+      bodyB: bodyLegBase,
       pivotInA,
+      pivotInB: [0,0,0],
+      axisInA: [0,0,1],
+      axisInB: [0,0,1],
+      useReferenceFrameA: true
+    });
+
+    const constraintBaseLeg = physicWorld.createHingeConstraint({
+      bodyA: bodyLegBase,
+      bodyB: bodyLeg,
+      pivotInA: [0,0,0],
       pivotInB,
       axisInA: [0,1,0],
       axisInB: [0,1,0],
@@ -623,119 +762,209 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     const constraintLegForeleg = physicWorld.createHingeConstraint({
       bodyA: bodyLeg,
       bodyB: bodyForeleg,
-      pivotInA: reverse ? [-1,0,0] : [+1,0,0],
-      pivotInB: reverse ? [+1,0,0] : [-1,0,0],
+      pivotInA: isBackLeg ? [-1,0,0] : [+1,0,0],
+      pivotInB: isBackLeg ? [+1,0,0] : [-1,0,0],
       axisInA: [0,1,0],
       axisInB: [0,1,0],
       useReferenceFrameA: true
     });
 
-    constraintBodyLeg.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
-    constraintBodyLeg.enableMotor(true);
-    constraintBodyLeg.setMaxMotorImpulse(4);
+    // const constraintForelegFoot = physicWorld.createHingeConstraint({
+    //   bodyA: bodyForeleg,
+    //   bodyB: bodyFoot,
+    //   pivotInA: [isBackLeg ? -1 : +1, 0,0],
+    //   pivotInB: [0,0,0],
+    //   axisInA: [0,1,0],
+    //   axisInB: [0,1,0],
+    //   useReferenceFrameA: true
+    // });
 
-    constraintLegForeleg.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
+
+
+    if (isBackLeg) {
+      constraintBodyLegBase.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
+    } else {
+      constraintBodyLegBase.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
+    }
+    constraintBodyLegBase.enableMotor(true);
+    constraintBodyLegBase.setMaxMotorImpulse(20);
+
+    constraintBaseLeg.setLimit(-Math.PI*0.7, +Math.PI*0.7, 0.0, 0.0, 0.0);
+    constraintBaseLeg.enableMotor(true);
+    constraintBaseLeg.setMaxMotorImpulse(20);
+
+    constraintLegForeleg.setLimit(-Math.PI*0.7, +Math.PI*0.7, 0.0, 0.0, 0.0);
     constraintLegForeleg.enableMotor(true);
-    constraintLegForeleg.setMaxMotorImpulse(2);
+    constraintLegForeleg.setMaxMotorImpulse(20);
 
-    const material = getTextureMaterial();
+    // constraintForelegFoot.setLimit(0, 0, 0.0, 0.0, 0.0);
 
+    // const geometryBaseLeg = new THREE.BoxGeometry( 1.0, 1.0, 1.0 );
+    const geometryBaseLeg = new THREE.SphereGeometry( 0.5 );
     const geometryLeg = new THREE.BoxGeometry( 2.0, 0.5, 0.5 );
+    // const geometryFoot = new THREE.SphereGeometry( 0.25 );
+    // const geometryFoot1 = new THREE.BoxGeometry( 0.25, 0.25, 1 );
+    const geometryFoot1 = new THREE.BoxGeometry( 0.25, 1, 1 );
+    // const geometryFoot2 = new THREE.BoxGeometry( 0.25, 1, 0.25 );
 
-    const meshLeg1 = new THREE.Mesh( geometryLeg, material );
-    meshLeg1.castShadow = true;
-    meshLeg1.receiveShadow = true;
-    scene.add( meshLeg1 );
+    const meshBaseLeg = new THREE.Mesh( geometryBaseLeg, material );
+    meshBaseLeg.castShadow = true;
+    meshBaseLeg.receiveShadow = true;
+    scene.add( meshBaseLeg );
 
-    const meshLeg2 = new THREE.Mesh( geometryLeg, material );
-    meshLeg2.castShadow = true;
-    meshLeg2.receiveShadow = true;
-    scene.add( meshLeg2 );
+    const meshLeg = new THREE.Mesh( geometryLeg, material );
+    meshLeg.castShadow = true;
+    meshLeg.receiveShadow = true;
+    scene.add( meshLeg );
 
-    let timeLeftBeforeMotorStartForelegs = 2.0;
-    let timeLeftBeforeMotorStartLegs = 4.0;
+    // const meshLegForeleg = new THREE.Mesh( geometryLeg, material );
+    // meshLegForeleg.castShadow = true;
+    // meshLegForeleg.receiveShadow = true;
+    // scene.add( meshLegForeleg );
+
+    const meshLegForeleg = new THREE.Object3D();
+    scene.add( meshLegForeleg );
+
+    // const geometryForeLeg = new THREE.BoxGeometry(4,1,1);
+    const meshX = new THREE.Mesh( geometryLeg, material );
+    meshX.castShadow = true;
+    meshX.receiveShadow = true;
+    const subObjX = new THREE.Object3D();
+    subObjX.position.set(0,0,0);
+    subObjX.add(meshX);
+    meshLegForeleg.add( subObjX );
+
+    const meshFoot1 = new THREE.Mesh( geometryFoot1, material );
+    meshFoot1.castShadow = true;
+    meshFoot1.receiveShadow = true;
+    const subObjFoot1 = new THREE.Object3D();
+    subObjFoot1.position.set(isBackLeg ? -1 : +1,0,0);
+    subObjFoot1.quaternion.set(1,0,0, 0.25 * Math.PI);
+    subObjFoot1.add(meshFoot1);
+    meshLegForeleg.add( subObjFoot1 );
+
+    // const meshFoot2 = new THREE.Mesh( geometryFoot2, material );
+    // meshFoot2.castShadow = true;
+    // meshFoot2.receiveShadow = true;
+    // const subObjFoot2 = new THREE.Object3D();
+    // subObjFoot2.position.set(isBackLeg ? -1 : +1,0,0);
+    // subObjFoot2.quaternion.set(1,0,0, 0.25 * Math.PI);
+    // subObjFoot2.add(meshFoot2);
+    // meshLegForeleg.add( subObjFoot2 );
+
+
+    // const meshFoot = new THREE.Mesh( geometryFoot, material );
+    // meshFoot.castShadow = true;
+    // meshFoot.receiveShadow = true;
+    // scene.add( meshFoot );
+
+
+    let timeLeftBeforeNextFrame = 2.0;
+
+    interface ILegFrame {
+      base: number;
+      leg: number;
+      foreleg: number;
+      duration: number;
+    }
+
+    const frames: ILegFrame[] = [];
+    frames.push({ base: 0.00, leg: +0.0, foreleg: 0.0, duration: 2.0 }); // flat
+    frames.push({ base: 0.00, leg: -0.3, foreleg: 0.7, duration: 1.0 }); // elevated
+    frames.push({ base: 0.15, leg: -0.3, foreleg: 0.7, duration: 1.0 }); // elevated rotated
+    frames.push({ base: 0.15, leg: +0.1, foreleg: 0.5, duration: 2.0 }); // rotated on the ground
+    frames.push({ base: 0.15, leg: +0.4, foreleg: 0.1, duration: 2.0 }); // rotated on the ground higher
+    frames.push({ base: 0.15, leg: +0.1, foreleg: 0.5, duration: 2.0 }); // rotated on the ground
+    frames.push({ base: 0.15, leg: -0.3, foreleg: 0.7, duration: 1.0 }); // elevated rotated
+    frames.push({ base: 0.00, leg: -0.3, foreleg: 0.7, duration: 1.0 }); // elevated
+
+    let currFrameIndex = 0;
+    let nextFrameIndex = 1;
+    let currFrame = frames[0];
+    let nextFrame = frames[1];
 
     return  (deltaTimeSec: number) => {
 
-      if (timeLeftBeforeMotorStartForelegs > 0) {
-        timeLeftBeforeMotorStartForelegs -= deltaTimeSec;
-        if (timeLeftBeforeMotorStartForelegs < 0) {
-          timeLeftBeforeMotorStartForelegs = 0;
+      if (timeLeftBeforeNextFrame > 0) {
+        timeLeftBeforeNextFrame -= deltaTimeSec;
+        if (timeLeftBeforeNextFrame <= 0) {
+
+          currFrameIndex = (currFrameIndex + 1) % frames.length;
+          nextFrameIndex = (nextFrameIndex + 1) % frames.length;
+          currFrame = frames[currFrameIndex];
+          nextFrame = frames[nextFrameIndex];
+
+          timeLeftBeforeNextFrame = currFrame.duration;
         }
       }
 
-      if (timeLeftBeforeMotorStartLegs > 0) {
-        timeLeftBeforeMotorStartLegs -= deltaTimeSec;
-        if (timeLeftBeforeMotorStartLegs < 0) {
-          timeLeftBeforeMotorStartLegs = 0;
-        }
+      const coef = 1 - timeLeftBeforeNextFrame / currFrame.duration;
+
+      // console.log({ coef })
+
+      let angleBase = currFrame.base + (nextFrame.base - currFrame.base) * coef;
+      let angleForeleg = currFrame.foreleg + (nextFrame.foreleg - currFrame.foreleg) * coef;
+      let angleLeg = currFrame.leg + (nextFrame.leg - currFrame.leg) * coef;
+
+      // let angleBase = +currFrame.base;
+      if (isBackLeg && !isLeftLeg) {
+        angleBase = -angleBase;
+      } else if (!isBackLeg && isLeftLeg) {
+        angleBase = -angleBase;
       }
+      constraintBodyLegBase.setMotorTarget(Math.PI*angleBase, deltaTimeSec*2);
 
-      if (timeLeftBeforeMotorStartForelegs === 0) {
+      angleForeleg = isBackLeg ? -angleForeleg : +angleForeleg;
+      constraintLegForeleg.setMotorTarget(Math.PI*+angleForeleg, deltaTimeSec*2);
 
-        // const angle1 = reverse ? -0.3 : +0.3;
-        const angle2 = reverse ? -0.3 : +0.3;
+      angleLeg = isBackLeg ? -angleLeg : +angleLeg;
+      constraintBaseLeg.setMotorTarget(Math.PI*+angleLeg, deltaTimeSec*2);
 
-        // constraintBodyLeg.setMotorTarget(Math.PI*+angle1, deltaTimeSec*1);
-        constraintLegForeleg.setMotorTarget(Math.PI*+angle2, deltaTimeSec*1);
-      }
+      _syncMeshWithRigidBody(meshBaseLeg, bodyLegBase);
+      _syncMeshWithRigidBody(meshLeg, bodyLeg);
+      _syncMeshWithRigidBody(meshLegForeleg, bodyForeleg);
 
-      if (timeLeftBeforeMotorStartLegs === 0) {
-
-        const angle1 = reverse ? -0.3 : +0.3;
-        // const angle2 = reverse ? -0.3 : +0.3;
-
-        constraintBodyLeg.setMotorTarget(Math.PI*+angle1, deltaTimeSec*1);
-        // constraintLegForeleg.setMotorTarget(Math.PI*+angle2, deltaTimeSec*1);
-      }
-
-      _syncMeshWithRigidBody(meshLeg1, bodyLeg);
-      _syncMeshWithRigidBody(meshLeg2, bodyForeleg);
     };
   }
 
-  const toSync: ((deltaTimeSec: number) => void)[] = [];
+  const diffX = 1.5;
+  const diffY = 1.5;
 
   toSync.push(_makeLeg(
-    [originX+2, originY+1.5, 5],
-    [originX+4, originY+1.5, 5],
-    [2,0,0],
-    [-1,-1.5,0],
+    [originX+diffX, originY+diffY, 5],
+    [originX+diffX, originY+diffY, 5],
+    [+diffX,+diffY,0],
+    [-1,0,0],
+    false,
     false,
   ));
 
   toSync.push(_makeLeg(
-    [originX+2, originY-1.5, 5],
-    [originX+4, originY-1.5, 5],
-    [+2,0,0],
-    [-1,+1.5,0],
+    [originX+2, originY-diffY, 5],
+    [originX+4, originY-diffY, 5],
+    [+diffX,-diffY,0],
+    [-1,0,0],
+    true,
     false,
   ));
 
   toSync.push(_makeLeg(
-    [originX-2, originY+1.5, 5],
-    [originX+2, originY+1.5, 5],
-    [-2,0,0],
-    [+1,-1.5,0],
+    [originX-2, originY+diffY, 5],
+    [originX+2, originY+diffY, 5],
+    [-diffX,+diffY,0],
+    [+1,0,0],
+    false,
     true,
   ));
 
   toSync.push(_makeLeg(
-    [originX-2, originY-1.5, 5],
-    [originX+2, originY-1.5, 5],
-    [-2,0,0],
-    [+1,+1.5,0],
+    [originX-2, originY-diffY, 5],
+    [originX+2, originY-diffY, 5],
+    [-diffX,-diffY,0],
+    [+1,0,0],
+    true,
     true,
   ));
-
-  const material = getTextureMaterial();
-
-  const geometryBody = new THREE.BoxGeometry( 4.0, 2.0, 0.5 );
-
-  const meshA = new THREE.Mesh( geometryBody, material );
-  meshA.castShadow = true;
-  meshA.receiveShadow = true;
-  scene.add( meshA );
 
   let timeElapsedSec = 0;
   let forward = true;
@@ -748,8 +977,6 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     }
 
     timeElapsedSec += deltaTimeSec;
-
-    _syncMeshWithRigidBody(meshA, bodyMain);
 
     for (const currSync of toSync) {
       currSync(deltaTimeSec);
@@ -767,6 +994,8 @@ function renderVehicle(scene: THREE.Scene, physicWorld: physics.PhysicWorld): ()
         type: 'box',
         size: [2,4,1] // X is right, Y is forward, Z is up
       },
+      position: [3,0,3],
+      orientation: [0, 0,0,1]
     },
 
     coordinateSystem: [
@@ -808,7 +1037,6 @@ function renderVehicle(scene: THREE.Scene, physicWorld: physics.PhysicWorld): ()
   };
 
   const dynamicVehicle = physicWorld.createVehicle(vehicleDef);
-  dynamicVehicle.getChassisBody().setPosition(3,0,3);
 
   const steeringAngle = Math.PI / 6;
 

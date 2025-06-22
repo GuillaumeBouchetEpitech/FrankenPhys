@@ -16,10 +16,13 @@ btjsDynamicsWorld::btjsDynamicsWorld(
   constraintSolver,
   collisionConfiguration)
 {
-	// initialise GImpact (dynamic concave mesh shape)
+  // initialise GImpact (dynamic concave mesh shape)
 	auto* pDispatcher = static_cast<btCollisionDispatcher*>(getDispatcher());
 	btjsCollisionAlgorithm::registerAlgorithm(pDispatcher);
 }
 
 btjsDynamicsWorld::~btjsDynamicsWorld()
-{}
+{
+  deactivateDebugLogs();
+}
+

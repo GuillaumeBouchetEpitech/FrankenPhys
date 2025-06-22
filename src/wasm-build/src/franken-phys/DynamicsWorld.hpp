@@ -27,4 +27,7 @@ protected:
 public:
     btCompoundShape* createCompoundFromGimpactShape(const btGImpactMeshShape* gimpactMesh, btScalar depth);
 
+    void activateDebugLogs();
+    void deactivateDebugLogs();
+
 };

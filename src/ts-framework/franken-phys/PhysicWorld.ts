@@ -577,4 +577,11 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     bullet.destroy(newVel);
   }
 
+  activateDebugLogs() {
+    this._rawDynamicsWorld.activateDebugLogs();
+  }
+  deactivateDebugLogs() {
+    this._rawDynamicsWorld.deactivateDebugLogs();
+  }
+
 };

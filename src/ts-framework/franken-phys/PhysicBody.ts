@@ -45,12 +45,15 @@ export type PhysicShapeDef = PrimitivesPhysicShapeDef | {
 export interface PhysicBodyDef {
   shape: PhysicShapeDef;
   mass: number;
+  position: glm.ReadonlyVec3,
+  orientation: glm.ReadonlyVec4,
 }
 
 export interface IPhysicBody extends IContactEventHandler<ContactDataBody> {
 
   isAlive(): boolean;
 
+  setPositionAndRotation(position: glm.ReadonlyVec3, rotation: glm.ReadonlyVec4): void;
   setPosition(x: number, y: number, z: number): void;
   setRotation(x: number, y: number, z: number, w: number): void;
   getPositionAndRotation(position: glm.vec3, rotation: glm.vec4): void;
@@ -113,6 +116,8 @@ export class ConcretePhysicBody extends ContactEventHandler<ContactDataBody> imp
     const rbInfo = new bullet.btRigidBodyConstructionInfo(def.mass, motionState, this._customShape.shape, tmpVec3);
     this._rawRigidBody = new bullet.btRigidBody(rbInfo);
 
+    this.setPositionAndRotation(def.position, def.orientation);
+
     // this._customShape = this._getShape(def.shape);
 
     bullet.destroy(tmpVec3);
@@ -134,6 +139,19 @@ export class ConcretePhysicBody extends ContactEventHandler<ContactDataBody> imp
 
   isAlive(): boolean {
     return this._isAlive;
+  }
+
+  setPositionAndRotation(position: glm.ReadonlyVec3, rotation: glm.ReadonlyVec4) {
+    const bullet = WasmModuleHolder.get();
+
+    const newPosition = new bullet.btVector3(position[0], position[1], position[2]);
+    const newRotation = new bullet.btQuaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
+    const newTransform = new bullet.btTransform(newRotation, newPosition);
+    this._rawRigidBody.setWorldTransform(newTransform);
+
+    bullet.destroy(newTransform);
+    bullet.destroy(newPosition);
+    bullet.destroy(newRotation);
   }
 
   setPosition(x: number, y: number, z: number) {

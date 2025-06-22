@@ -885,6 +885,8 @@ declare module FrankenPhys {
     class btjsDynamicsWorld extends btDiscreteDynamicsWorld {
         constructor(dispatcher: btDispatcher, pairCache: btBroadphaseInterface, constraintSolver: btConstraintSolver, collisionConfiguration: btCollisionConfiguration);
         createCompoundFromGimpactShape(gimpactMesh: btGImpactMeshShape, depth: number): btCompoundShape;
+        activateDebugLogs(): void;
+        deactivateDebugLogs(): void;
     }
     class btGImpactShapeInterface extends btConcaveShape {
     }
