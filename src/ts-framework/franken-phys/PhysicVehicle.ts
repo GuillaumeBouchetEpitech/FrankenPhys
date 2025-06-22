@@ -1,5 +1,5 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
@@ -46,12 +46,12 @@ export class ConcretePhysicVehicle implements IPhysicVehicle {
 
   public _chassisBody: ConcretePhysicBody;
 
-  private _vehicleTuning: bulletJsTypes.btVehicleTuning;
-  private _defaultVehicleRaycaster: bulletJsTypes.btDefaultVehicleRaycaster;
-  public _rawVehicle: bulletJsTypes.btRaycastVehicle;
+  private _vehicleTuning: FrankenPhys.btVehicleTuning;
+  private _defaultVehicleRaycaster: FrankenPhys.btDefaultVehicleRaycaster;
+  public _rawVehicle: FrankenPhys.btRaycastVehicle;
 
   constructor(
-    rawDynamicsWorld: bulletJsTypes.btDynamicsWorld,
+    rawDynamicsWorld: FrankenPhys.btDynamicsWorld,
     chassisBody: ConcretePhysicBody,
     def: PhysicVehicleDef
   ) {

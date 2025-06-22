@@ -1,7 +1,7 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
-export type BulletJsInstance = typeof bulletJsTypes;
+export type BulletJsInstance = typeof FrankenPhys;
 
 export class WasmModuleHolder {
 
@@ -13,7 +13,7 @@ export class WasmModuleHolder {
 
   static get(): BulletJsInstance {
     if (!this._wasmModule) {
-      throw new Error("bulletJs wasm module not loaded");
+      throw new Error("FrankenPhys wasm module not loaded");
     }
     return this._wasmModule;
   }

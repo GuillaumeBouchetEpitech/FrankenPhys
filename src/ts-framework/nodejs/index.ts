@@ -1,4 +1,4 @@
 
-export * from "./NodeJsBulletWasmModule"
+export * from "./NodeJsFrankenPhysWasmModule"
 
-export * as physics from "../bullet-js/index"
+export * as physics from "../franken-phys/index"

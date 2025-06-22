@@ -3,7 +3,6 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
-import replace from '@rollup/plugin-replace'
 import * as fs from 'fs';
 
 const _getBuildOptions = () => {
@@ -42,16 +41,6 @@ const asyncBuild = async ({
     typescript({ tsconfig: tsConfigFilePath }),
     commonjs(),
     nodeResolve(),
-    replace({
-      preventAssignment: true,
-      // remove word boundaries
-      delimiters: ['', ''],
-      // remove what would become 'require(@bulletjs)'
-      values: {
-        // "import bulletJs from \"bulletJs\";": "",
-        "var bulletjs = require('@bulletjs');": "",
-      },
-    }),
   ];
 
   if (buildOptions.isRelease) {
@@ -62,9 +51,7 @@ const asyncBuild = async ({
   }
 
   const inputOptions = {
-    external: [
-      '@bulletjs'
-    ],
+    external: [],
     input: inputFilePath,
     plugins,
   };

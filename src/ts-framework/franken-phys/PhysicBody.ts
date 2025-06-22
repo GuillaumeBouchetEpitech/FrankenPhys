@@ -1,5 +1,5 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
@@ -94,12 +94,12 @@ export interface IPhysicBody extends IContactEventHandler<ContactDataBody> {
 
 export class ConcretePhysicBody extends ContactEventHandler<ContactDataBody> implements IPhysicBody {
 
-  public _customShape: { shape: bulletJsTypes.btCollisionShape; cleanup: () => void };
-  public _rawRigidBody: bulletJsTypes.btRigidBody;
+  public _customShape: { shape: FrankenPhys.btCollisionShape; cleanup: () => void };
+  public _rawRigidBody: FrankenPhys.btRigidBody;
 
   private _isAlive: boolean = true;
 
-  constructor(def: PhysicBodyDef, rawShape: { shape: bulletJsTypes.btCollisionShape; cleanup: () => void }) {
+  constructor(def: PhysicBodyDef, rawShape: { shape: FrankenPhys.btCollisionShape; cleanup: () => void }) {
     super();
 
     const bullet = WasmModuleHolder.get();
@@ -109,7 +109,7 @@ export class ConcretePhysicBody extends ContactEventHandler<ContactDataBody> imp
     const tmpVec3 = new bullet.btVector3();
     this._customShape.shape.calculateLocalInertia(def.mass, tmpVec3);
 
-    const motionState = null as unknown as bulletJsTypes.btMotionState; // hack :(
+    const motionState = null as unknown as FrankenPhys.btMotionState; // hack :(
     const rbInfo = new bullet.btRigidBodyConstructionInfo(def.mass, motionState, this._customShape.shape, tmpVec3);
     this._rawRigidBody = new bullet.btRigidBody(rbInfo);
 
@@ -127,7 +127,7 @@ export class ConcretePhysicBody extends ContactEventHandler<ContactDataBody> imp
     this._customShape.cleanup();
 
     // hack to force it to crash if the body is reused
-    this._rawRigidBody = null as unknown as bulletJsTypes.btRigidBody;
+    this._rawRigidBody = null as unknown as FrankenPhys.btRigidBody;
 
     this._isAlive = false;
   }

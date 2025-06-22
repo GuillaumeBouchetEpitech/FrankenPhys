@@ -1,6 +1,6 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
-import bulletJsExtra from "../types/bulletJs-extra";
+import FrankenPhys from "../types/FrankenPhys";
+import FrankenPhysExtra from "../types/FrankenPhys-extra";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
@@ -18,11 +18,11 @@ import * as glm from "gl-matrix";
 
 export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
 
-  private _collisionConf: bulletJsTypes.btDefaultCollisionConfiguration;
-  private _dispatcher: bulletJsTypes.btCollisionDispatcher;
-  private _broadPhase: bulletJsTypes.btDbvtBroadphase;
-  private _solver: bulletJsTypes.btSequentialImpulseConstraintSolver;
-  private _rawDynamicsWorld: bulletJsTypes.btjsDynamicsWorld;
+  private _collisionConf: FrankenPhys.btDefaultCollisionConfiguration;
+  private _dispatcher: FrankenPhys.btCollisionDispatcher;
+  private _broadPhase: FrankenPhys.btDbvtBroadphase;
+  private _solver: FrankenPhys.btSequentialImpulseConstraintSolver;
+  private _rawDynamicsWorld: FrankenPhys.btjsDynamicsWorld;
 
   private _bodyMap = new Map<number, ConcretePhysicBody>();
   private _vehicleMap = new Map<number, ConcretePhysicVehicle>();
@@ -95,7 +95,7 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     return newBody;
   }
 
-  private _getShape(def: PhysicShapeDef, isDynamic: boolean): { shape: bulletJsTypes.btCollisionShape; cleanup: () => void } {
+  private _getShape(def: PhysicShapeDef, isDynamic: boolean): { shape: FrankenPhys.btCollisionShape; cleanup: () => void } {
 
     const bullet = WasmModuleHolder.get();
 
@@ -186,7 +186,7 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
 
         const rawCompound = new bullet.btCompoundShape();
 
-        const allRawShapes: { shape: bulletJsTypes.btCollisionShape; cleanup: () => void }[] = [];
+        const allRawShapes: { shape: FrankenPhys.btCollisionShape; cleanup: () => void }[] = [];
 
         const localVec3 = new bullet.btVector3();
         const localQuat = new bullet.btQuaternion(0,0,1,0);
@@ -471,7 +471,7 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
         bodyB: 1<<2
     };
 
-    const _onContactChange = (event: { type: allContactEvents, data: bulletJsExtra.btjsContactData }) => {
+    const _onContactChange = (event: { type: allContactEvents, data: FrankenPhysExtra.btjsContactData }) => {
 
         const bodyA = event.data.getBodyA();
         const bodyB = event.data.getBodyB();
@@ -556,7 +556,7 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     }
 
     // TODO: hacky
-    const bullet = WasmModuleHolder.get() as unknown as typeof bulletJsExtra;
+    const bullet = WasmModuleHolder.get() as unknown as typeof FrankenPhysExtra;
 
     bullet.on("beginContact", _onContactChange);
     bullet.on("updateContact", _onContactChange);

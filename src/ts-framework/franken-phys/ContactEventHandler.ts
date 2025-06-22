@@ -16,7 +16,7 @@ export interface ContactDataWorld {
 
 export interface ContactDataBody {
 	contactId: number,
-	target?: ContactEventHandler<ContactDataBody>,
+	// target?: ContactEventHandler<ContactDataBody>,
 	other: IPhysicBody,
 	position: glm.vec3,
 	normalB: glm.vec3,

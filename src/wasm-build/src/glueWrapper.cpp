@@ -1,7 +1,7 @@
 
 #include "BulletHeaders.hpp"
 
-#include "bullet-js/DynamicsWorld.hpp"
-#include "bullet-js/ContactData.hpp"
+#include "franken-phys/DynamicsWorld.hpp"
+#include "franken-phys/ContactData.hpp"
 
 #include "../obj/main/glue.cpp"

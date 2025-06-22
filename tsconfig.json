@@ -101,15 +101,9 @@
     "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
 
     "paths": {
-      "@bullet-js-framework": ["src/ts-framework/bullet-js/index.ts"],
+      "@franken-phys-framework": ["src/ts-framework/franken-phys/index.ts"],
       "@browser-loader": ["src/ts-framework/browser/index.ts"],
       "@nodejs-loader": ["src/ts-framework/nodejs/index.ts"],
-
-      // "types/*": [
-      //   "./types/*"
-      // ]
-
-
     }
 
   }

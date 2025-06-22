@@ -26,23 +26,8 @@ const buildOptions = _getBuildOptions();
 //
 //
 
-const testPlugin = {
-  name: "test Loader",
-  setup(build) {
-    build.onLoad({ filter: /\.ts$/ }, ({ path }) => {
-
-      const fileContent = fs.readFileSync(path, { encoding: "utf8" });
-
-      const contents = fileContent.replace(/import\s+bulletjs\s+from\s+\"@bulletjs\"\s*?;?/gm, '');
-
-      return { contents, loader: "ts" };
-    });
-  },
-};
-
 const asyncBuild = async ({
   name,
-  // tsConfigFilePath,
   inputFilePath,
   outputFilePath,
 }) => {
@@ -57,12 +42,8 @@ const asyncBuild = async ({
     format: "esm",
     root: path.dirname(inputFilePath),
     naming: path.basename(outputFilePath),
-    plugins: [
-      testPlugin
-    ],
-    external: [
-      '@bulletjs'
-    ]
+    plugins: [],
+    external: []
   };
 
   if (buildOptions.isRelease) {

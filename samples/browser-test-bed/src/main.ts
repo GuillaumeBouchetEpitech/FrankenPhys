@@ -1,6 +1,6 @@
 
 // check the paths of the tsconfig file a the root of this repo
-import { BrowserBulletWasmModule, physics } from "@browser-loader";
+import { BrowserFrankenPhysWasmModule, physics } from "@browser-loader";
 
 import * as THREE from "three";
 
@@ -14,13 +14,13 @@ window.onload = async () => {
   document.body.appendChild(stats.dom)
 
   // load the wasm side
-  await BrowserBulletWasmModule.load({
-    jsUrl: "../../build/bulletJs.0.0.1.js",
+  await BrowserFrankenPhysWasmModule.load({
+    jsUrl: "../../build/FrankenPhys.0.0.1.js",
     wasmUrl: "../../build"
   });
 
   // set the wasm side
-  physics.WasmModuleHolder.set(BrowserBulletWasmModule.get());
+  physics.WasmModuleHolder.set(BrowserFrankenPhysWasmModule.get());
 
   // ready
 
@@ -67,7 +67,7 @@ window.onload = async () => {
 
   const toSync: ((deltaTimeSec: number) => void)[] = [
 
-    renderStaticBox(scene, physicWorld),
+    renderStaticBoxes(scene, physicWorld),
 
     // renderVehicle(scene, physicWorld),
 
@@ -86,7 +86,7 @@ window.onload = async () => {
     rayCastTest(scene, physicWorld),
     convexSweepTest(scene, physicWorld),
 
-    // renderHingeConstrainedBoxes(scene, physicWorld),
+    renderHingeConstrainedBoxes(scene, physicWorld),
   ]
 
 
@@ -157,7 +157,7 @@ function getTextureMaterial() {
 }
 
 
-function renderStaticBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
+function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
 
   const staticBoxA = physicWorld.createRigidBody({
     mass: 0,
@@ -178,42 +178,42 @@ function renderStaticBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld): 
     }
   });
   staticBoxB.setPosition(17,0,-7);
-  staticBoxB.setRotation(0,1,0, -Math.PI * 1.5);
+  // staticBoxB.setRotation(0,1,0, -Math.PI * 1.5);
   staticBoxB.setFriction(0.1);
 
-  // const staticBoxC = physicWorld.createRigidBody({
-  //   mass: 0,
-  //   shape: {
-  //     type: 'box',
-  //     size: [32,32,2]
-  //   }
-  // });
-  // staticBoxC.setPosition(0,-30,-2);
-  // // staticBoxC.setRotation(0,1,0, -Math.PI * 1.5);
-  // staticBoxC.setFriction(0.1);
+  const staticBoxC = physicWorld.createRigidBody({
+    mass: 0,
+    shape: {
+      type: 'box',
+      size: [20,10,1]
+    }
+  });
+  staticBoxC.setPosition(10,-20,0);
+  staticBoxC.setFriction(0.1);
 
   const material = getTextureMaterial();
-  const geometry = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
+  const geometryAB = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
+  const geometryC = new THREE.BoxGeometry( 20.0, 10.0, 1.0 );
 
-  const boxMeshA = new THREE.Mesh( geometry, material );
+  const boxMeshA = new THREE.Mesh( geometryAB, material );
   boxMeshA.castShadow = true;
   boxMeshA.receiveShadow = true;
   scene.add( boxMeshA );
 
-  const boxMeshB = new THREE.Mesh( geometry, material );
+  const boxMeshB = new THREE.Mesh( geometryAB, material );
   boxMeshB.castShadow = true;
   boxMeshB.receiveShadow = true;
   scene.add( boxMeshB );
 
-  // const boxMeshC = new THREE.Mesh( geometry, material );
-  // boxMeshC.castShadow = true;
-  // boxMeshC.receiveShadow = true;
-  // scene.add( boxMeshC );
+  const boxMeshC = new THREE.Mesh( geometryC, material );
+  boxMeshC.castShadow = true;
+  boxMeshC.receiveShadow = true;
+  scene.add( boxMeshC );
 
   return function syncRenderedStaticBox() {
     _syncMeshWithRigidBody(boxMeshA, staticBoxA);
     _syncMeshWithRigidBody(boxMeshB, staticBoxB);
-    // _syncMeshWithRigidBody(boxMeshC, staticBoxC);
+    _syncMeshWithRigidBody(boxMeshC, staticBoxC);
   }
 }
 
@@ -571,33 +571,27 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     mass: 10,
     shape: {
       type: 'box',
-      size: [4.0,1.0,0.5]
-    },
-  };
-  const bodyDefLeg: physics.PhysicBodyDef = {
-    mass: 1.0,
-    shape: {
-      type: 'box',
-      size: [2.0,0.5,0.5]
+      size: [4.0,2.0,0.5]
     },
   };
 
-  const originX = -10;
-  const originY = +10;
+  const originX = +10;
+  const originY = -20;
 
-  const bodyA = physicWorld.createRigidBody(bodyDefChassis);
-  bodyA.setPosition(originX, originY, 5);
-  bodyA.setFriction(0.1);
+  const bodyMain = physicWorld.createRigidBody(bodyDefChassis);
+  bodyMain.setPosition(originX, originY, 5);
+  bodyMain.setFriction(0.1);
 
   //
   //
   //
 
   const _makeLeg = (
-    pos: glm.ReadonlyVec3,
+    posLeg: glm.ReadonlyVec3,
+    posForeleg: glm.ReadonlyVec3,
     pivotInA: glm.ReadonlyVec3,
     pivotInB: glm.ReadonlyVec3,
-    angleZ: number
+    reverse: boolean = false
   ) => {
 
     const bodyDefLeg: physics.PhysicBodyDef = {
@@ -608,25 +602,17 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
       },
     };
 
-    const body1 = physicWorld.createRigidBody(bodyDefLeg);
-    body1.setPosition(pos[0], pos[1], pos[2]);
-    body1.setFriction(0.1);
+    const bodyLeg = physicWorld.createRigidBody(bodyDefLeg);
+    bodyLeg.setPosition(posLeg[0], posLeg[1], posLeg[2]);
+    bodyLeg.setFriction(0.1);
 
-    const quat = glm.quat.setAxisAngle(glm.quat.create(), [0,0,1], angleZ);
-    const mat3 = glm.mat3.fromQuat(glm.mat3.create(), quat);
+    const bodyForeleg = physicWorld.createRigidBody(bodyDefLeg);
+    bodyForeleg.setPosition(posForeleg[0], posForeleg[1], posForeleg[2]);
+    bodyForeleg.setFriction(0.1);
 
-    const pos22: glm.ReadonlyVec3 = glm.vec3.transformMat3(glm.vec3.create(), [2,0,0], mat3);
-    const pos2: glm.ReadonlyVec3 = [pos[0] + pos22[0], pos[1] + pos22[1], pos[2] + pos22[2]];
-
-    const body2 = physicWorld.createRigidBody(bodyDefLeg);
-    body2.setPosition(pos2[0], pos2[1], pos2[2]);
-    body2.setFriction(0.1);
-
-    const constraint1 = physicWorld.createHingeConstraint({
-      bodyA,
-      bodyB: body1,
-      // pivotInA: [+2.0,+0.0,0.0],
-      // pivotInB: [-1.0,-1.5,0.0],
+    const constraintBodyLeg = physicWorld.createHingeConstraint({
+      bodyA: bodyMain,
+      bodyB: bodyLeg,
       pivotInA,
       pivotInB,
       axisInA: [0,1,0],
@@ -634,25 +620,23 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
       useReferenceFrameA: true
     });
 
-    constraint1.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-    constraint1.enableMotor(true);
-    constraint1.setMaxMotorImpulse(10);
-
-    const constraint2 = physicWorld.createHingeConstraint({
-      bodyA: body1,
-      bodyB: body2,
-      pivotInA: [+1.0,0.0,0.0],
-      pivotInB: [-1.0,0.0,0.0],
-      // pivotInA: [+pos22[0] * 0.5,+pos22[1] * 0.5,+pos22[2] * 0.5],
-      // pivotInB: [-pos22[0] * 0.5,-pos22[1] * 0.5,-pos22[2] * 0.5],
+    const constraintLegForeleg = physicWorld.createHingeConstraint({
+      bodyA: bodyLeg,
+      bodyB: bodyForeleg,
+      pivotInA: reverse ? [-1,0,0] : [+1,0,0],
+      pivotInB: reverse ? [+1,0,0] : [-1,0,0],
       axisInA: [0,1,0],
       axisInB: [0,1,0],
       useReferenceFrameA: true
     });
 
-    constraint2.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-    constraint2.enableMotor(true);
-    constraint2.setMaxMotorImpulse(10);
+    constraintBodyLeg.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
+    constraintBodyLeg.enableMotor(true);
+    constraintBodyLeg.setMaxMotorImpulse(4);
+
+    constraintLegForeleg.setLimit(-Math.PI*0.3, +Math.PI*0.3, 0.0, 0.0, 0.0);
+    constraintLegForeleg.enableMotor(true);
+    constraintLegForeleg.setMaxMotorImpulse(2);
 
     const material = getTextureMaterial();
 
@@ -668,161 +652,90 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     meshLeg2.receiveShadow = true;
     scene.add( meshLeg2 );
 
+    let timeLeftBeforeMotorStartForelegs = 2.0;
+    let timeLeftBeforeMotorStartLegs = 4.0;
+
     return  (deltaTimeSec: number) => {
 
-      constraint1.setMotorTarget(Math.PI*+0.3, deltaTimeSec*2);
-      constraint2.setMotorTarget(Math.PI*+0.3, deltaTimeSec*2);
+      if (timeLeftBeforeMotorStartForelegs > 0) {
+        timeLeftBeforeMotorStartForelegs -= deltaTimeSec;
+        if (timeLeftBeforeMotorStartForelegs < 0) {
+          timeLeftBeforeMotorStartForelegs = 0;
+        }
+      }
 
-      _syncMeshWithRigidBody(meshLeg1, body1);
-      _syncMeshWithRigidBody(meshLeg2, body2);
+      if (timeLeftBeforeMotorStartLegs > 0) {
+        timeLeftBeforeMotorStartLegs -= deltaTimeSec;
+        if (timeLeftBeforeMotorStartLegs < 0) {
+          timeLeftBeforeMotorStartLegs = 0;
+        }
+      }
+
+      if (timeLeftBeforeMotorStartForelegs === 0) {
+
+        // const angle1 = reverse ? -0.3 : +0.3;
+        const angle2 = reverse ? -0.3 : +0.3;
+
+        // constraintBodyLeg.setMotorTarget(Math.PI*+angle1, deltaTimeSec*1);
+        constraintLegForeleg.setMotorTarget(Math.PI*+angle2, deltaTimeSec*1);
+      }
+
+      if (timeLeftBeforeMotorStartLegs === 0) {
+
+        const angle1 = reverse ? -0.3 : +0.3;
+        // const angle2 = reverse ? -0.3 : +0.3;
+
+        constraintBodyLeg.setMotorTarget(Math.PI*+angle1, deltaTimeSec*1);
+        // constraintLegForeleg.setMotorTarget(Math.PI*+angle2, deltaTimeSec*1);
+      }
+
+      _syncMeshWithRigidBody(meshLeg1, bodyLeg);
+      _syncMeshWithRigidBody(meshLeg2, bodyForeleg);
     };
   }
 
-  const _doUpdate1 = _makeLeg(
+  const toSync: ((deltaTimeSec: number) => void)[] = [];
+
+  toSync.push(_makeLeg(
     [originX+2, originY+1.5, 5],
-    // [+2.0,+0.0,0],
-    // [-1.0,-1.5,0],
+    [originX+4, originY+1.5, 5],
     [2,0,0],
     [-1,-1.5,0],
-    // 0.5 * Math.PI
-    0
-  );
+    false,
+  ));
 
-  const _doUpdate2 = _makeLeg(
+  toSync.push(_makeLeg(
     [originX+2, originY-1.5, 5],
-    [+2.0,+0.0,0],
-    [-1.0,+1.5,0],
-    0.0*Math.PI
-    // [-2.0,+0.0,0],
-    // [+1.0,-0.0,0],
-    // 1*Math.PI
-  );
+    [originX+4, originY-1.5, 5],
+    [+2,0,0],
+    [-1,+1.5,0],
+    false,
+  ));
 
-  // const bodyB11 = physicWorld.createRigidBody(bodyDefLeg);
-  // bodyB11.setPosition(originX+2, originY+1.5, 5);
-  // bodyB11.setFriction(0.1);
+  toSync.push(_makeLeg(
+    [originX-2, originY+1.5, 5],
+    [originX+2, originY+1.5, 5],
+    [-2,0,0],
+    [+1,-1.5,0],
+    true,
+  ));
 
-  // const bodyB12 = physicWorld.createRigidBody(bodyDefLeg);
-  // bodyB12.setPosition(originX+4, originY+1.5, 5);
-  // bodyB12.setFriction(0.1);
-
-  // const bodyB2 = physicWorld.createRigidBody(bodyDefLeg);
-  // bodyB2.setPosition(originX+2, originY-1.5, 5);
-  // bodyB2.setFriction(0.1);
-
-  // const constraintA1 = physicWorld.createHingeConstraint({
-  //   bodyA,
-  //   bodyB: bodyB11,
-  //   pivotInA: [+2.0,+0.0,0.0],
-  //   pivotInB: [-1.0,-1.5,0.0],
-  //   axisInA: [0,1,0],
-  //   axisInB: [0,1,0],
-  //   useReferenceFrameA: true
-  // });
-
-  // const constraintA11 = physicWorld.createHingeConstraint({
-  //   bodyA: bodyB11,
-  //   bodyB: bodyB12,
-  //   pivotInA: [+1.0,0.0,0.0],
-  //   pivotInB: [-1.0,0.0,0.0],
-  //   axisInA: [0,1,0],
-  //   axisInB: [0,1,0],
-  //   useReferenceFrameA: true
-  // });
-
-  // constraintA1.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-  // constraintA1.enableMotor(true);
-  // constraintA1.setMaxMotorImpulse(10);
-
-  // constraintA11.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-  // constraintA11.enableMotor(true);
-  // constraintA11.setMaxMotorImpulse(10);
-
-  // const constraintA2 = physicWorld.createHingeConstraint({
-  //   bodyA,
-  //   bodyB: bodyB2,
-  //   pivotInA: [+2.0,+0.0,0.0],
-  //   pivotInB: [-1.0,+1.5,0.0],
-  //   axisInA: [0,1,0],
-  //   axisInB: [0,1,0],
-  //   useReferenceFrameA: true
-  // });
-
-  // constraintA2.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-  // constraintA2.enableMotor(true);
-  // constraintA2.setMaxMotorImpulse(10);
-
-  const bodyC1 = physicWorld.createRigidBody(bodyDefLeg);
-  bodyC1.setPosition(originX-2, originY+1.5, 5);
-  bodyC1.setFriction(0.1);
-
-  const bodyC2 = physicWorld.createRigidBody(bodyDefLeg);
-  bodyC2.setPosition(originX-2, originY-1.5, 5);
-  bodyC2.setFriction(0.1);
-
-  const constraintB1 = physicWorld.createHingeConstraint({
-    bodyA,
-    bodyB: bodyC1,
-    pivotInA: [-2.0,+0.0,0.0],
-    pivotInB: [+1.0,-1.5,0.0],
-    axisInA: [0,1,0],
-    axisInB: [0,1,0],
-    useReferenceFrameA: true
-  });
-
-  constraintB1.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-  constraintB1.enableMotor(true);
-  constraintB1.setMaxMotorImpulse(10);
-
-  const constraintB2 = physicWorld.createHingeConstraint({
-    bodyA,
-    bodyB: bodyC2,
-    pivotInA: [-2.0,+0.0,0.0],
-    pivotInB: [+1.0,+1.5,0.0],
-    axisInA: [0,1,0],
-    axisInB: [0,1,0],
-    useReferenceFrameA: true
-  });
-
-  constraintB2.setLimit(-Math.PI*0.9, +Math.PI*0.9, 0.0, 0.0, 0.0);
-  constraintB2.enableMotor(true);
-  constraintB2.setMaxMotorImpulse(10);
+  toSync.push(_makeLeg(
+    [originX-2, originY-1.5, 5],
+    [originX+2, originY-1.5, 5],
+    [-2,0,0],
+    [+1,+1.5,0],
+    true,
+  ));
 
   const material = getTextureMaterial();
 
-  const geometryBody = new THREE.BoxGeometry( 4.0, 1.0, 0.5 );
-  const geometryLeg = new THREE.BoxGeometry( 2.0, 0.5, 0.5 );
+  const geometryBody = new THREE.BoxGeometry( 4.0, 2.0, 0.5 );
 
   const meshA = new THREE.Mesh( geometryBody, material );
   meshA.castShadow = true;
   meshA.receiveShadow = true;
   scene.add( meshA );
-
-  // const meshB11 = new THREE.Mesh( geometryLeg, material );
-  // meshB11.castShadow = true;
-  // meshB11.receiveShadow = true;
-  // scene.add( meshB11 );
-
-  // const meshB12 = new THREE.Mesh( geometryLeg, material );
-  // meshB12.castShadow = true;
-  // meshB12.receiveShadow = true;
-  // scene.add( meshB12 );
-
-
-  // const meshB2 = new THREE.Mesh( geometryLeg, material );
-  // meshB2.castShadow = true;
-  // meshB2.receiveShadow = true;
-  // scene.add( meshB2 );
-
-  const meshC1 = new THREE.Mesh( geometryLeg, material );
-  meshC1.castShadow = true;
-  meshC1.receiveShadow = true;
-  scene.add( meshC1 );
-
-  const meshC2 = new THREE.Mesh( geometryLeg, material );
-  meshC2.castShadow = true;
-  meshC2.receiveShadow = true;
-  scene.add( meshC2 );
 
   let timeElapsedSec = 0;
   let forward = true;
@@ -834,25 +747,13 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
       forward = !forward;
     }
 
-    // constraintA1.setMotorTarget(Math.PI*+0.3, deltaTimeSec*2);
-    // constraintA11.setMotorTarget(Math.PI*+0.3, deltaTimeSec*2);
-    // constraintA2.setMotorTarget(Math.PI*+0.3, deltaTimeSec*2);
-    constraintB1.setMotorTarget(Math.PI*-0.3, deltaTimeSec*2);
-    constraintB2.setMotorTarget(Math.PI*-0.3, deltaTimeSec*2);
-
-
     timeElapsedSec += deltaTimeSec;
 
-    _syncMeshWithRigidBody(meshA, bodyA);
-    // _syncMeshWithRigidBody(meshB11, bodyB11);
-    // _syncMeshWithRigidBody(meshB12, bodyB12);
+    _syncMeshWithRigidBody(meshA, bodyMain);
 
-    // _syncMeshWithRigidBody(meshB2, bodyB2);
-    _syncMeshWithRigidBody(meshC1, bodyC1);
-    _syncMeshWithRigidBody(meshC2, bodyC2);
-
-    _doUpdate1(deltaTimeSec);
-    _doUpdate2(deltaTimeSec);
+    for (const currSync of toSync) {
+      currSync(deltaTimeSec);
+    }
   }
 }
 
@@ -1007,9 +908,9 @@ function renderContactEvents(scene: THREE.Scene, physicWorld: physics.PhysicWorl
     // console.log('endContact', 'sphere', event.data.position);
     allContactEvents.delete(event.data.contactId);
   });
-  // physicWorld.addEventListener('ccdContact', (event) => {
-  //   console.log('ccdContact', 'sphere', event.data.position);
-  // });
+  physicWorld.addEventListener('ccdContact', (event) => {
+    console.log('ccdContact', 'sphere', event.data.position);
+  });
 
 
   return function syncRenderedContactEvent() {

@@ -1,6 +1,6 @@
 
 // check the paths of the tsconfig file a the root of this repo
-import { NodeJsBulletWasmModule, physics } from "@nodejs-loader"
+import { NodeJsFrankenPhysWasmModule, physics } from "@nodejs-loader"
 
 import * as path from "path";
 
@@ -8,10 +8,10 @@ const asyncRun = async () => {
 
   // load the wasm side
   const urlPrefix = path.join(__dirname, '..', '..', '..', 'build');
-  await NodeJsBulletWasmModule.loadWasmPart(urlPrefix);
+  await NodeJsFrankenPhysWasmModule.loadWasmPart(urlPrefix);
 
   // set the wasm side
-  physics.WasmModuleHolder.set(NodeJsBulletWasmModule.get());
+  physics.WasmModuleHolder.set(NodeJsFrankenPhysWasmModule.get());
 
   // ready
 

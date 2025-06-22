@@ -1,22 +1,25 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
+import { IPhysicBody, ConcretePhysicBody } from "./PhysicBody";
+
 import * as glm from "gl-matrix";
 
-export interface IConvexSweepDef {
+export interface IRayCastDef {
   from: glm.ReadonlyVec3;
   to: glm.ReadonlyVec3;
   collisionFilterGroup: number;
   collisionFilterMask: number;
-  radius: number;
 };
 
-export const convexSweep = (
-  rawDynamicsWorld: bulletJsTypes.btjsDynamicsWorld,
-  def: IConvexSweepDef
+export const rayCast = (
+  rawDynamicsWorld: FrankenPhys.btjsDynamicsWorld,
+  bodyMap: Map<number, ConcretePhysicBody>,
+  def: IRayCastDef
 ): {
+  object: IPhysicBody;
   fraction: number;
   impact: glm.vec3;
   normal: glm.vec3;
@@ -26,46 +29,32 @@ export const convexSweep = (
 
   const fromVec3 = new bullet.btVector3(def.from[0], def.from[1], def.from[2]);
   const toVec3 = new bullet.btVector3(def.to[0], def.to[1], def.to[2]);
-
-  const fromTrsf = new bullet.btTransform();
-  fromTrsf.setIdentity();
-  fromTrsf.setOrigin(fromVec3);
-  const toTrsf = new bullet.btTransform();
-  toTrsf.setIdentity();
-  toTrsf.setOrigin(toVec3);
-
-  const result = new bullet.ClosestConvexResultCallback(fromVec3, toVec3);
+  const result = new bullet.ClosestRayResultCallback(fromVec3, toVec3);
 
   result.set_m_collisionFilterGroup(def.collisionFilterGroup);
   result.set_m_collisionFilterMask(def.collisionFilterMask);
 
-  const shape = new bullet.btSphereShape(def.radius);
-
-  rawDynamicsWorld.convexSweepTest(shape, fromTrsf, toTrsf, result, 0);
+  rawDynamicsWorld.rayTest(fromVec3, toVec3, result);
 
   if (!result.hasHit()) {
     bullet.destroy(fromVec3);
     bullet.destroy(toVec3);
     bullet.destroy(result);
-    bullet.destroy(shape);
-    bullet.destroy(fromTrsf);
-    bullet.destroy(toTrsf);
     return;
   }
-  // const object = bodyMap.get((result.get() as any).ptr);
-  // if (!object) {
-  //   bullet.destroy(fromVec3);
-  //   bullet.destroy(toVec3);
-  //   bullet.destroy(result);
-  //   return;
-  // }
+  const object = bodyMap.get((result.get_m_collisionObject() as any).ptr);
+  if (!object) {
+    bullet.destroy(fromVec3);
+    bullet.destroy(toVec3);
+    bullet.destroy(result);
+    return;
+  }
   // get_m_closestHitFraction(): number;
 
   // get_m_collisionObject(): btCollisionObject;
 
-  const rawPosition = result.get_m_hitPointWorld();
   const rawNormal = result.get_m_hitNormalWorld();
-  const fraction = result.get_m_closestHitFraction();
+  const rawPosition = result.get_m_hitPointWorld();
 
   const impact = glm.vec3.fromValues(
     rawPosition.x(),
@@ -84,10 +73,13 @@ export const convexSweep = (
   bullet.destroy(fromVec3);
   bullet.destroy(toVec3);
   bullet.destroy(result);
-  bullet.destroy(shape);
-  bullet.destroy(fromTrsf);
-  bullet.destroy(toTrsf);
 
-  return { fraction, impact, normal };
+  return {
+    object,
+    fraction: result.get_m_closestHitFraction(),
+    impact,
+    normal,
+  };
+
 };
 

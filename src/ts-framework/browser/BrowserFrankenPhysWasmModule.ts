@@ -1,22 +1,22 @@
 
-import bulletTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { scriptLoadingUtility } from "./scriptLoadingUtility";
 
-export type BulletJsInstance = typeof bulletTypes;
+export type FrankenPhysInstance = typeof FrankenPhys;
 
 interface IOptions {
   jsUrl: string,
   wasmUrl: string
 }
 
-export class BrowserBulletWasmModule {
+export class BrowserFrankenPhysWasmModule {
 
-  private static _wasmModule: BulletJsInstance | undefined;
+  private static _wasmModule: FrankenPhysInstance | undefined;
 
   static async load(opts: IOptions) {
-    await BrowserBulletWasmModule.loadJsPart(opts.jsUrl);
-    await BrowserBulletWasmModule.loadWasmPart(opts.wasmUrl);
+    await BrowserFrankenPhysWasmModule.loadJsPart(opts.jsUrl);
+    await BrowserFrankenPhysWasmModule.loadWasmPart(opts.wasmUrl);
   }
 
   static async loadJsPart(url: string) {
@@ -25,7 +25,7 @@ export class BrowserBulletWasmModule {
 
   static async loadWasmPart(urlPrefix: string) {
     // @ts-ignore
-    BrowserBulletWasmModule._wasmModule = await bulletJsLoader({
+    BrowserFrankenPhysWasmModule._wasmModule = await FrankenPhysLoader({
       locateFile: (url: string) => {
         return `${urlPrefix}/${url}`;
       },
@@ -33,9 +33,9 @@ export class BrowserBulletWasmModule {
     });
   }
 
-  static get(): BulletJsInstance {
+  static get(): FrankenPhysInstance {
     if (!this._wasmModule) {
-      throw new Error("bulletjs wasm module not loaded");
+      throw new Error("FrankenPhys wasm module not loaded");
     }
     return this._wasmModule;
   }

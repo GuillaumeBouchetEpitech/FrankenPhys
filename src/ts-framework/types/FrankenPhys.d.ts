@@ -1,6 +1,6 @@
-export default bulletjs;
-declare function bulletjs<T>(target?: T): Promise<T & typeof bulletjs>;
-declare module bulletjs {
+export default FrankenPhys;
+declare function FrankenPhys<T>(target?: T): Promise<T & typeof FrankenPhys>;
+declare module FrankenPhys {
     function destroy(obj: any): void;
     function _malloc(size: number): number;
     function _free(ptr: number): void;

@@ -1,5 +1,5 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
@@ -26,7 +26,7 @@ export type Generic6DofConstraintDef = {
 
 export class ConcreteGeneric6DofConstraint implements IGeneric6DofConstraint {
 
-  public _rawConstraint: bulletJsTypes.btGeneric6DofSpringConstraint;
+  public _rawConstraint: FrankenPhys.btGeneric6DofSpringConstraint;
   public _bodyA: IPhysicBody;
   public _bodyB: IPhysicBody;
 

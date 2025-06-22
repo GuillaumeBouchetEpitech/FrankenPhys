@@ -86,8 +86,7 @@ case ${USER_INPUT} in
     # my_title_print "DONE: building C++ Bullet Library"
     ;;
   3)
-    # npx webidl-dts-gen -ed -n bulletjs -i bulletjs.idl -o ../../types/bulletjs.d.ts
-    npx webidl-dts-gen -ed -n bulletjs -i bulletjs.idl -o ../ts-framework/framework/physics/bulletjs.d.ts
+    npx webidl-dts-gen -ed -n FrankenPhys -i franken-phys.idl -o ../ts-framework/types/FrankenPhys.d.ts
     ;;
   *)
     echo "=> INVALID CHOICE"

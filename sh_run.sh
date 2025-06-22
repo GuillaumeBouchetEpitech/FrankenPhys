@@ -67,14 +67,14 @@ case ${USER_INPUT} in
   2)
     echo "=> ts samples basic"
 
-    npm run bunjs-build-basic-debug
-    # npm run rollupjs-build-basic-debug
+    # npm run bunjs-build-basic-debug
+    npm run rollupjs-build-basic-release
     ;;
   3)
     echo "=> ts samples server"
 
-    npm run bunjs-build-server-debug
-    # npm run rollupjs-build-server-debug
+    # npm run bunjs-build-server-debug
+    npm run rollupjs-build-server-release
     ;;
   # 4)
   #   echo "=> ts samples battlefield"

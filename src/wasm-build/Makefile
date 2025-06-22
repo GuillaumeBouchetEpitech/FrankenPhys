@@ -3,7 +3,7 @@
 #
 ## NAME(S)
 
-TARGET_BULLETJS=					bulletJs.0.0.1.js
+TARGET_FRANKENPHYS=				FrankenPhys.0.0.1.js
 TARGET_BULLET_LINEARMATH=	lib_linearmath.bc
 TARGET_BULLET_COLLISION=	lib_collision.bc
 TARGET_BULLET_DYNAMICS=		lib_dynamics.bc
@@ -33,7 +33,7 @@ PATH_BUILD=         ../../build
 SRC_MAIN= \
 	$(wildcard \
 		$(PATH_SRC)/*.cpp \
-		$(PATH_SRC)/bullet-js/*.cpp \
+		$(PATH_SRC)/franken-phys/*.cpp \
 	)
 
 SRC_BULLET_LINEARMATH= \
@@ -142,7 +142,7 @@ LDFLAGS+=	--llvm-lto 1
 # 			-s EXPORTED_RUNTIME_METHODS=[]
 
 # library specific
-LDFLAGS+=	-s "EXPORT_NAME='bulletJsLoader'"
+LDFLAGS+=	-s "EXPORT_NAME='FrankenPhysLoader'"
 LDFLAGS+=	-s "NO_EXIT_RUNTIME=1"
 LDFLAGS+=	-s "NO_FILESYSTEM=1"
 LDFLAGS+=	-s "NO_DYNAMIC_EXECUTION=1"
@@ -183,11 +183,11 @@ ensurefolders:
 				mkdir -p $(PATH_BULLET_OBJDIR)
 
 generateBinding:	ensurefolders
-					python $(WEBIDL_BINDER) bulletjs.idl $(PATH_MAIN_OBJDIR)/glue
+					python $(WEBIDL_BINDER) franken-phys.idl $(PATH_MAIN_OBJDIR)/glue
 
 buildModule:	generateBinding
 				$(MAKE) $(OBJ_MAIN)
-				$(CXX) $(CXXFLAGS) $(OBJ_MAIN) -o $(PATH_BUILD)/$(TARGET_BULLETJS) $(LDFLAGS)
+				$(CXX) $(CXXFLAGS) $(OBJ_MAIN) -o $(PATH_BUILD)/$(TARGET_FRANKENPHYS) $(LDFLAGS)
 
 # bullet: linearmath collision dynamics softbody
 bullet: linearmath collision dynamics

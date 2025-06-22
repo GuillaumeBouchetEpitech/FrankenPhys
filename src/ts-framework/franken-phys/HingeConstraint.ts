@@ -1,5 +1,5 @@
 
-import bulletJsTypes from "../types/bulletJsTypes";
+import FrankenPhys from "../types/FrankenPhys";
 
 import { WasmModuleHolder } from "./WasmModuleHolder";
 
@@ -36,7 +36,7 @@ export type HingeConstraintDef = {
 
 export class ConcreteHingeConstraint implements IHingeConstraint {
 
-  public _rawConstraint: bulletJsTypes.btHingeConstraint;
+  public _rawConstraint: FrankenPhys.btHingeConstraint;
   public _bodyA: IPhysicBody;
   public _bodyB: IPhysicBody;
 

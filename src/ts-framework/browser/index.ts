@@ -1,4 +1,4 @@
 
-export * from "./BrowserBulletWasmModule"
+export * from "./BrowserFrankenPhysWasmModule"
 
-export * as physics from "../bullet-js/index"
+export * as physics from "../franken-phys/index"
