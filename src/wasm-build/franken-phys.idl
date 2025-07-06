@@ -640,7 +640,7 @@ interface btCollisionWorld {
   void updateSingleAabb(btCollisionObject colObj);
   // void setDebugDrawer(btIDebugDraw debugDrawer);
   // btIDebugDraw getDebugDrawer();
-  // void debugDrawWorld();
+  void debugDrawWorld();
   // void debugDrawObject([Const, Ref] btTransform worldTransform, [Const] btCollisionShape shape, [Const, Ref] btVector3 color);
 };
 
@@ -1033,8 +1033,8 @@ interface btjsDynamicsWorld {
   void btjsDynamicsWorld(btDispatcher dispatcher, btBroadphaseInterface pairCache, btConstraintSolver constraintSolver, btCollisionConfiguration collisionConfiguration);
 
   btCompoundShape createCompoundFromGimpactShape(btGImpactMeshShape gimpactMesh, float depth);
-  void activateDebugLogs();
-  void deactivateDebugLogs();
+  void setDebugWireframeCallback(long callbackPointer);
+  void setDebugWireframeFeaturesFlag(long flag);
 };
 btjsDynamicsWorld implements btDiscreteDynamicsWorld;
 

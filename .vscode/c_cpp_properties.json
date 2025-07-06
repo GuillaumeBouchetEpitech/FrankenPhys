@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/src/wasm-build/src/**",
+                "${workspaceFolder}/src/wasm-build/src/thirdparty/**",
+                "${EMSDK}/upstream/emscripten/system/include/**"
+            ],
+            "defines": [
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++20"
+        }
+    ],
+    "version": 4
+}

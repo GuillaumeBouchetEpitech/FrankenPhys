@@ -4,7 +4,6 @@
 
 #include "CollisionAlgorithm.hpp"
 
-
 btjsDynamicsWorld::btjsDynamicsWorld(
   btDispatcher* dispatcher,
   btBroadphaseInterface* pairCache,
@@ -23,6 +22,9 @@ btjsDynamicsWorld::btjsDynamicsWorld(
 
 btjsDynamicsWorld::~btjsDynamicsWorld()
 {
-  deactivateDebugLogs();
+  btIDebugDraw* currentDebugDrawer = this->getDebugDrawer();
+  if (currentDebugDrawer) {
+    delete currentDebugDrawer;
+    this->setDebugDrawer(nullptr);
+  }
 }
-

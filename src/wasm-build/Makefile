@@ -107,7 +107,7 @@ WEBIDL_BINDER=$(EMSDK)/upstream/emscripten/tools/webidl_binder.py
 OPTIMISATION_FLAG=	-O3
 
 CXXFLAGS=	$(OPTIMISATION_FLAG) \
-			-std=c++11 \
+			-std=c++20 \
 			-I$(PATH_SRC) \
 			-I$(PATH_BULLET)
 # -s "DEMANGLE_SUPPORT=1"

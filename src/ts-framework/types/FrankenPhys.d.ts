@@ -602,6 +602,7 @@ declare module FrankenPhys {
         contactPairTest(colObjA: btCollisionObject, colObjB: btCollisionObject, resultCallback: ContactResultCallback): void;
         contactTest(colObj: btCollisionObject, resultCallback: ContactResultCallback): void;
         updateSingleAabb(colObj: btCollisionObject): void;
+        debugDrawWorld(): void;
     }
     class btContactSolverInfo {
         get_m_splitImpulse(): boolean;
@@ -885,8 +886,8 @@ declare module FrankenPhys {
     class btjsDynamicsWorld extends btDiscreteDynamicsWorld {
         constructor(dispatcher: btDispatcher, pairCache: btBroadphaseInterface, constraintSolver: btConstraintSolver, collisionConfiguration: btCollisionConfiguration);
         createCompoundFromGimpactShape(gimpactMesh: btGImpactMeshShape, depth: number): btCompoundShape;
-        activateDebugLogs(): void;
-        deactivateDebugLogs(): void;
+        setDebugWireframeCallback(callbackPointer: number): void;
+        setDebugWireframeFeaturesFlag(flag: number): void;
     }
     class btGImpactShapeInterface extends btConcaveShape {
     }

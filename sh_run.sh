@@ -76,12 +76,6 @@ case ${USER_INPUT} in
     # npm run bunjs-build-server-debug
     npm run rollupjs-build-server-release
     ;;
-  # 4)
-  #   echo "=> ts samples battlefield"
-
-  #   npm run bunjs-build-battlefield-debug
-  #   # npm run rollupjs-build-server-debug
-  #   ;;
   *)
     echo "=> INVALID CHOICE"
     ;;

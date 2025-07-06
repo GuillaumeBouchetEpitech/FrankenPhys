@@ -577,11 +577,28 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     bullet.destroy(newVel);
   }
 
-  activateDebugLogs() {
-    this._rawDynamicsWorld.activateDebugLogs();
+  setDebugWireframeCallback(callback: (
+    x1: number,
+    y1: number,
+    z1: number,
+    x2: number,
+    y2: number,
+    z2: number,
+    r: number,
+    g: number,
+    b: number,
+  ) => void) {
+    const bullet = WasmModuleHolder.get();
+    const contactPtr = (bullet as any).addFunction(callback, "vfffffffff"); // vfffffffff -> Void Float Float ...
+    this._rawDynamicsWorld.setDebugWireframeCallback(contactPtr);
   }
-  deactivateDebugLogs() {
-    this._rawDynamicsWorld.deactivateDebugLogs();
+
+  setDebugWireframeFeaturesFlag(flag: number): void {
+    this._rawDynamicsWorld.setDebugWireframeFeaturesFlag(flag);
+  }
+
+  debugDrawWorld() {
+    this._rawDynamicsWorld.debugDrawWorld();
   }
 
 };

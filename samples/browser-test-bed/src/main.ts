@@ -9,6 +9,8 @@ import Stats from 'stats.js'
 
 window.onload = async () => {
 
+  console.log('page loaded')
+
   const stats = new Stats()
   stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom)
@@ -25,7 +27,6 @@ window.onload = async () => {
   // ready
 
   const physicWorld = new physics.PhysicWorld();
-  physicWorld.activateDebugLogs();
 
   //
   // simulate
@@ -88,6 +89,8 @@ window.onload = async () => {
     convexSweepTest(scene, physicWorld),
 
     renderHingeConstrainedBoxes(scene, physicWorld),
+
+    renderDebugLines(scene, physicWorld),
   ]
 
 
@@ -156,6 +159,92 @@ function getTextureMaterial() {
 
   return texturedMaterial;
 }
+
+
+
+
+function renderDebugLines(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
+
+  let debugLine: THREE.LineSegments | undefined;
+  let debugLineGeometry: THREE.BufferGeometry | undefined;
+  const debugLineMaterial = new THREE.LineBasicMaterial({ vertexColors: true });
+
+  const maxSize = 1024 * 1024 * 4; // <- 4Mo
+
+  let currVerticesIndex = 0;
+  const debugLinesVertices = new Float32Array(maxSize);
+  let currColorsIndex = 0;
+  const debugLinesColors = new Float32Array(maxSize);
+
+  // all (?) the debug rendering feature flag
+  let debugDrawerFlag: number = 0;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawAabb;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawContactPoints;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraints;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraintLimits;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawNormals;
+  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawFrames;
+
+  physicWorld.setDebugWireframeFeaturesFlag(debugDrawerFlag);
+  physicWorld.setDebugWireframeCallback((
+    x1,y1,z1,
+    x2,y2,z2,
+    r,g,b,
+  ) => {
+
+    if (currVerticesIndex + 6 >= maxSize) {
+      console.log("not enough memory for rendering all the debug lines!");
+      return;
+    }
+
+    // accumulate in the buffer
+
+    debugLinesVertices[currVerticesIndex++] = x1;
+    debugLinesVertices[currVerticesIndex++] = y1;
+    debugLinesVertices[currVerticesIndex++] = z1;
+
+    debugLinesColors[currColorsIndex++] = r;
+    debugLinesColors[currColorsIndex++] = g;
+    debugLinesColors[currColorsIndex++] = b;
+
+    debugLinesVertices[currVerticesIndex++] = x2;
+    debugLinesVertices[currVerticesIndex++] = y2;
+    debugLinesVertices[currVerticesIndex++] = z2;
+
+    debugLinesColors[currColorsIndex++] = r;
+    debugLinesColors[currColorsIndex++] = g;
+    debugLinesColors[currColorsIndex++] = b;
+  });
+
+  return function syncRenderedStaticBox() {
+
+    if (debugLine) {
+      scene.remove(debugLine);
+      debugLine = undefined;
+    }
+    if (debugLineGeometry) {
+      debugLineGeometry.dispose();
+    }
+
+    currVerticesIndex = 0; // reset
+    currColorsIndex = 0; // reset
+
+    physicWorld.debugDrawWorld();
+
+    // render
+    debugLineGeometry = new THREE.BufferGeometry();
+    debugLineGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( debugLinesVertices.slice(0, currVerticesIndex), 3 ) );
+    debugLineGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( debugLinesColors.slice(0, currColorsIndex), 3 ) );
+    debugLine = new THREE.LineSegments(debugLineGeometry, debugLineMaterial);
+
+
+    scene.add(debugLine);
+  }
+}
+
+
+
 
 
 function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
@@ -235,7 +324,7 @@ function renderDynamicPyramid(scene: THREE.Scene, physicWorld: physics.PhysicWor
   body.setFriction(0.1);
   body.disableDeactivation();
 
-  const redMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+  const redMaterial = new THREE.MeshBasicMaterial( { color: 0x66066 } );
 
   const pyGeometry = new THREE.BufferGeometry();
 
@@ -461,12 +550,12 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
   const originX = -5;
 
   const bodyA = physicWorld.createRigidBody({
-    mass: 1,
+    mass: 0,
     shape: {
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX, 3,5],
+    position: [originX, 4,5],
     orientation: [0, 0,0,1]
   });
   bodyA.setFriction(0.1);
@@ -477,7 +566,7 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
       type: 'box',
       size: [2,1,0.5]
     },
-    position: [originX+2, 3,5],
+    position: [originX+2, 4,5],
     orientation: [0, 0,0,1]
   });
   bodyB.setFriction(0.1);
@@ -488,7 +577,7 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX+4, 3,5],
+    position: [originX+4, 4,5],
     orientation: [0, 0,0,1]
   });
   bodyC.setFriction(0.1);
@@ -499,7 +588,7 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
       type: 'box',
       size: [2,1,0.5]
     },
-    position: [originX+6, 3,5],
+    position: [originX+6, 4,5],
     orientation: [0, 0,0,1]
   });
   bodyD.setFriction(0.1);
@@ -510,7 +599,7 @@ function renderDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.Ph
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX+8, 3,5],
+    position: [originX+8, 4,5],
     orientation: [0, 0,0,1]
   });
   bodyE.setFriction(0.1);
@@ -626,6 +715,7 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
 
   const bodyMain = physicWorld.createRigidBody(bodyDefMain);
   bodyMain.setFriction(10.0);
+  bodyMain.disableDeactivation();
 
   const geometryBody = new THREE.BoxGeometry(mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]);
 
@@ -716,14 +806,17 @@ function renderHingeConstrainedBoxes(scene: THREE.Scene, physicWorld: physics.Ph
     const bodyLegBase = physicWorld.createRigidBody(bodyDefLegBase);
     // bodyLegBase.setPosition(posLeg[0], posLeg[1], posLeg[2]);
     bodyLegBase.setFriction(10.0);
+    bodyLegBase.disableDeactivation();
 
     const bodyLeg = physicWorld.createRigidBody(bodyDefLeg);
     // bodyLeg.setPosition(posLeg[0], posLeg[1], posLeg[2]);
     bodyLeg.setFriction(10.0);
+    bodyLeg.disableDeactivation();
 
     const bodyForeleg = physicWorld.createRigidBody(bodyDefForeleg);
     // bodyForeleg.setPosition(posForeleg[0], posForeleg[1], posForeleg[2]);
     bodyForeleg.setFriction(10.0);
+    bodyForeleg.disableDeactivation();
 
     // const bodyFoot = physicWorld.createRigidBody({
     //   mass: 0.01,

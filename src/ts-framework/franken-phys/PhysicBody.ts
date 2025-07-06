@@ -14,26 +14,34 @@ const CF_KINEMATIC_OBJECT = 2;
 const CF_NO_CONTACT_RESPONSE = 4;
 const CF_CUSTOM_MATERIAL_CALLBACK = 8; // <= allows per-triangle material (friction/restitution)
 
-type PrimitivesPhysicShapeDef = {
+export type PrimitivesPhysicBoxShapeDef = {
   type: 'box';
   size: glm.ReadonlyVec3;
-} | {
+};
+export type PrimitivesPhysicSphereShapeDef = {
   type: 'sphere';
   radius: number;
-} | {
+};
+export type PrimitivesPhysicCylinderShapeDef = {
   type: 'cylinder';
   length: number;
   radius: number;
-} | {
+};
+export type PrimitivesPhysicCapsuleShapeDef = {
   type: 'capsule';
   length: number;
   radius: number;
-} | {
+};
+export type PrimitivesPhysicMeshShapeDef = {
   type: 'mesh';
   triangles: [glm.ReadonlyVec3, glm.ReadonlyVec3, glm.ReadonlyVec3][];
 };
 
-export type PhysicShapeDef = PrimitivesPhysicShapeDef | {
+export type PrimitivesPhysicShapeDef = PrimitivesPhysicBoxShapeDef |
+  PrimitivesPhysicSphereShapeDef | PrimitivesPhysicCylinderShapeDef |
+  PrimitivesPhysicCapsuleShapeDef | PrimitivesPhysicMeshShapeDef;
+
+export type PrimitivesPhysicCompoundShapeDef = {
   type: 'compound';
   shapes: {
     position: glm.vec3;
@@ -41,6 +49,8 @@ export type PhysicShapeDef = PrimitivesPhysicShapeDef | {
     shape: PrimitivesPhysicShapeDef;
   }[];
 };
+
+export type PhysicShapeDef = PrimitivesPhysicShapeDef | PrimitivesPhysicCompoundShapeDef;
 
 export interface PhysicBodyDef {
   shape: PhysicShapeDef;

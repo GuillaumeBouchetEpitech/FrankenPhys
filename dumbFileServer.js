@@ -201,6 +201,9 @@ const on_file_request = async (threading_headers, req, res) => {
     res.setHeader('Last-Modified', fileStats.mtime.toString());
   }
 
+  // no cache!
+  res.setHeader('Last-Modified', (new Date()).toString());
+
   const originalSize = data.length;
   let sizeToSend = originalSize;
 
