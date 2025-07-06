@@ -2,11 +2,14 @@
   "name": "FrankenPhys",
   "version": "0.0.1",
   "description": "TODO",
-  "main": "build/FrankenPhys.0.0.1.js",
-  "types": "src/ts-framework/franken-phys/index.ts",
+  "main": "dist/bundle.js",
+  "types": "dist/browser/index.ts",
   "type": "module",
   "repository": "TODO",
   "scripts": {
+
+    "make-release": "npx bun run ./configs/rollupjs-release.js build-options-debug",
+
     "build": "npm run build-basic-release",
     "build-basic-release": "npm run rollupjs-build-basic-release",
     "build-basic-debug": "npm run rollupjs-build-basic-debug",

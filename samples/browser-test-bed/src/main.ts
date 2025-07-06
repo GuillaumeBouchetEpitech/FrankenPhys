@@ -1,6 +1,6 @@
 
 // check the paths of the tsconfig file a the root of this repo
-import { BrowserFrankenPhysWasmModule, physics } from "@browser-loader";
+import { BrowserFrankenPhysWasmModule, physics } from "../../..";
 
 import * as THREE from "three";
 

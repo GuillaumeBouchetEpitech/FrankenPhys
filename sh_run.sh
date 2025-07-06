@@ -49,10 +49,10 @@ echo ""
 echo "Shell => ${SHELL}"
 echo ""
 echo "Build what?"
-echo "=> Bullet Wrapper options: 1"
-echo "=> ts samples basic:       2"
-echo "=> ts samples server:      3"
-# echo "=> ts samples battlefield: 4"
+echo "=> Bullet Wrapper options:  1"
+echo "=> ts samples basic:        2"
+echo "=> ts samples server:       3"
+echo "=> make release:            4"
 echo ""
 
 read USER_INPUT
@@ -75,6 +75,11 @@ case ${USER_INPUT} in
 
     # npm run bunjs-build-server-debug
     npm run rollupjs-build-server-release
+    ;;
+  4)
+    echo "=> make release"
+
+    npm run make-release
     ;;
   *)
     echo "=> INVALID CHOICE"
