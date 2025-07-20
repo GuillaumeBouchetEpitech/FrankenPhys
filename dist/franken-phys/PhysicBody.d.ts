@@ -38,6 +38,8 @@ export interface PhysicBodyDef {
     mass: number;
     position: glm.ReadonlyVec3;
     orientation: glm.ReadonlyVec4;
+    collisionFilterGroup?: number;
+    collisionFilterMask?: number;
 }
 export interface IPhysicBody extends IContactEventHandler<ContactDataBody> {
     isAlive(): boolean;

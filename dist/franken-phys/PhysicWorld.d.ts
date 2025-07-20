@@ -2,6 +2,7 @@ import { PhysicBodyDef, IPhysicBody } from "./PhysicBody";
 import { IPhysicVehicle, PhysicVehicleDef } from "./PhysicVehicle";
 import { Generic6DofConstraintDef, IGeneric6DofConstraint } from "./Generic6DofConstraint";
 import { HingeConstraintDef, IHingeConstraint } from "./HingeConstraint";
+import { Generic6DofConstraint2Def, IGeneric6DofConstraint2 } from "./Generic6DofConstraint2";
 import { ContactEventHandler, ContactDataWorld } from "./ContactEventHandler";
 import * as glm from "gl-matrix";
 export declare class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
@@ -12,10 +13,12 @@ export declare class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     private _rawDynamicsWorld;
     private _bodyMap;
     private _vehicleMap;
-    private _constraintMap;
-    private _allConstraints;
+    private _constraintMap1;
+    private _allConstraints1;
     private _constraintMap2;
     private _allConstraints2;
+    private _constraintMap3;
+    private _allConstraints3;
     constructor();
     dispose(): void;
     createRigidBody(def: PhysicBodyDef): IPhysicBody;
@@ -27,6 +30,8 @@ export declare class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     destroyGeneric6DofConstraint(constraint: IGeneric6DofConstraint): void;
     createHingeConstraint(def: HingeConstraintDef): IHingeConstraint;
     destroyHingeConstraint(constraint: IHingeConstraint): void;
+    createGeneric6DofConstraint2(def: Generic6DofConstraint2Def): IGeneric6DofConstraint2;
+    destroyGeneric6DofConstraint2(constraint: IGeneric6DofConstraint2): void;
     rayCast(from: glm.ReadonlyVec3, to: glm.ReadonlyVec3): {
         object: IPhysicBody;
         fraction: number;

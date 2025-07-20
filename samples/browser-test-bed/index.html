@@ -7,7 +7,7 @@
         <title>template (test)</title>
 
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <!-- <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
 
         <style>
             body {
@@ -16,11 +16,29 @@
                 padding: 0px;
                 overflow: hidden;
             }
+            #render-area {
+                width: 800px;
+                height: 600px;
+            }
         </style>
 
     </head>
 
     <body>
+
+        <table border="1">
+            <tr>
+                <td>
+                    <div id="render-area"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>TEST</p>
+                </td>
+            </tr>
+        </table>
+
         <script type="module" src="./dist/bundle.js"></script>
     </body>
 </html>

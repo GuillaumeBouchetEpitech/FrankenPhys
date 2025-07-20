@@ -895,4 +895,11 @@ declare module FrankenPhys {
         constructor(meshInterface: btStridingMeshInterface);
         updateBound(): void;
     }
+    class bjtsGeneric6DofSpring2Constraint extends btGeneric6DofConstraint {
+        constructor(rbA: btRigidBody, rbB: btRigidBody, frameInA: btTransform, frameInB: btTransform, rotOrder: number);
+        constructor(rbB: btRigidBody, frameInB: btTransform, rotOrder: number);
+        enableSpring(index: number, onOff: boolean): void;
+        setStiffness(index: number, stiffness: number): void;
+        setDamping(index: number, damping: number): void;
+    }
 }

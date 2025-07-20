@@ -7,6 +7,8 @@ export * from "./PhysicVehicle"
 export * from "./PhysicWorld"
 export * from "./rayCast"
 
+export { RotationOrder } from "./Generic6DofConstraint2"
+
 export enum DebugDrawFlags {
   DBG_NoDebug = 0,
   DBG_DrawWireframe = 1,

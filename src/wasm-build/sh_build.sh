@@ -71,6 +71,7 @@ case ${USER_INPUT} in
     echo "=> building C++ Bullet Wrapper"
     # setup_emscripten_env
     make fclean
+    make generateBinding -j7
     make all -j7
     # cp ./build/* ./demo_threejs/dist/
 

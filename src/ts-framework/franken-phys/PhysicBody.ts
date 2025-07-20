@@ -55,8 +55,10 @@ export type PhysicShapeDef = PrimitivesPhysicShapeDef | PrimitivesPhysicCompound
 export interface PhysicBodyDef {
   shape: PhysicShapeDef;
   mass: number;
-  position: glm.ReadonlyVec3,
-  orientation: glm.ReadonlyVec4,
+  position: glm.ReadonlyVec3;
+  orientation: glm.ReadonlyVec4;
+  collisionFilterGroup?: number;
+  collisionFilterMask?: number;
 }
 
 export interface IPhysicBody extends IContactEventHandler<ContactDataBody> {

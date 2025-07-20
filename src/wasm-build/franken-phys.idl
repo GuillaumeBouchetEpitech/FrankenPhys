@@ -558,6 +558,15 @@ interface btGeneric6DofSpringConstraint {
 };
 btGeneric6DofSpringConstraint implements btGeneric6DofConstraint;
 
+// interface btGeneric6DofSpring2Constraint {
+//   void btGeneric6DofSpring2Constraint([Ref] btRigidBody rbA, [Ref] btRigidBody rbB, [Ref] btTransform frameInA, [Ref] btTransform frameInB, long rotOrder);
+//   void btGeneric6DofSpring2Constraint([Ref] btRigidBody rbB, [Ref] btTransform frameInB, long rotOrder);
+//   void enableSpring(long index, boolean onOff);
+//   void setStiffness(long index, float stiffness);
+//   void setDamping(long index, float damping);
+// };
+// btGeneric6DofSpring2Constraint implements btGeneric6DofConstraint;
+
 interface btSequentialImpulseConstraintSolver {
   void btSequentialImpulseConstraintSolver();
 };
@@ -1054,6 +1063,15 @@ btGImpactMeshShape implements btGImpactShapeInterface;
 //   btCompoundShape createCompoundFromGimpactShape([Const] btGImpactMeshShape gimpactMesh, float depth);
 // };
 // ExperimentalDynamicsWorld implements btDiscreteDynamicsWorld;
+
+interface bjtsGeneric6DofSpring2Constraint {
+  void bjtsGeneric6DofSpring2Constraint([Ref] btRigidBody rbA, [Ref] btRigidBody rbB, [Ref] btTransform frameInA, [Ref] btTransform frameInB, long rotOrder);
+  void bjtsGeneric6DofSpring2Constraint([Ref] btRigidBody rbB, [Ref] btTransform frameInB, long rotOrder);
+  void enableSpring(long index, boolean onOff);
+  void setStiffness(long index, float stiffness);
+  void setDamping(long index, float damping);
+};
+bjtsGeneric6DofSpring2Constraint implements btGeneric6DofConstraint;
 
 //
 // /BulletJs
