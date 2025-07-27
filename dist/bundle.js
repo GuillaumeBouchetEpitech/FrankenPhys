@@ -1091,64 +1091,6 @@ class ConcretePhysicVehicle {
     }
 }
 
-class ConcreteGeneric6DofConstraint {
-    constructor(def) {
-        this._bodyA = def.bodyA;
-        this._bodyB = def.bodyB;
-        const bullet = WasmModuleHolder.get();
-        const rawRigidBodyA = def.bodyA._rawRigidBody;
-        const rawRigidBodyB = def.bodyB._rawRigidBody;
-        const newRotation = new bullet.btQuaternion(0, 0, 1, 0);
-        const newPositionA = new bullet.btVector3(def.frameA[0], def.frameA[1], def.frameA[2]);
-        const newTransformA = new bullet.btTransform(newRotation, newPositionA);
-        const newPositionB = new bullet.btVector3(def.frameB[0], def.frameB[1], def.frameB[2]);
-        const newTransformB = new bullet.btTransform(newRotation, newPositionB);
-        this._rawConstraint = new bullet.btGeneric6DofSpringConstraint(rawRigidBodyA, rawRigidBodyB, newTransformA, newTransformB, def.useReferenceFrameA);
-        this._rawConstraint.enableSpring(0, false);
-        this._rawConstraint.enableSpring(1, false);
-        this._rawConstraint.enableSpring(2, false);
-        this._rawConstraint.setStiffness(0, 1);
-        this._rawConstraint.setStiffness(1, 1);
-        this._rawConstraint.setStiffness(2, 1);
-        this._rawConstraint.setDamping(0, 1);
-        this._rawConstraint.setDamping(1, 1);
-        this._rawConstraint.setDamping(2, 1);
-        bullet.destroy(newTransformA);
-        bullet.destroy(newTransformB);
-        bullet.destroy(newPositionA);
-        bullet.destroy(newPositionB);
-        bullet.destroy(newRotation);
-    }
-    dispose() {
-        const bullet = WasmModuleHolder.get();
-        bullet.destroy(this._rawConstraint);
-    }
-    setLinearLowerLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setLinearLowerLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setLinearUpperLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setLinearUpperLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setAngularLowerLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setAngularLowerLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setAngularUpperLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setAngularUpperLimit(newVal);
-        bullet.destroy(newVal);
-    }
-}
-
 class ConcreteHingeConstraint {
     constructor(def) {
         this._bodyA = def.bodyA;
@@ -1315,8 +1257,8 @@ class PhysicWorld extends ContactEventHandler {
         super();
         this._bodyMap = new Map();
         this._vehicleMap = new Map();
-        this._constraintMap1 = new Map();
-        this._allConstraints1 = [];
+        // private _constraintMap1 = new Map<number, ConcreteGeneric6DofConstraint[]>();
+        // private _allConstraints1: ConcreteGeneric6DofConstraint[] = [];
         this._constraintMap2 = new Map();
         this._allConstraints2 = [];
         this._constraintMap3 = new Map();
@@ -1334,9 +1276,9 @@ class PhysicWorld extends ContactEventHandler {
     }
     dispose() {
         const bullet = WasmModuleHolder.get();
-        this._allConstraints1.forEach((currConstraint) => currConstraint.dispose());
-        this._allConstraints1.length = 0;
-        this._constraintMap1.clear();
+        // this._allConstraints1.forEach((currConstraint) => currConstraint.dispose());
+        // this._allConstraints1.length = 0;
+        // this._constraintMap1.clear();
         this._allConstraints2.forEach((currConstraint) => currConstraint.dispose());
         this._allConstraints2.length = 0;
         this._constraintMap2.clear();
@@ -1478,18 +1420,25 @@ class PhysicWorld extends ContactEventHandler {
         // hack, we use the wasm heap memory address as an identifier, it's faster
         this._bodyMap.delete(bodyPtr);
         rigidBody.dispose();
-        // destroy any constraints that might affect this body
-        const bodyListOfConstraints = this._constraintMap1.get(bodyPtr);
-        if (bodyListOfConstraints) {
-            for (const currConstraint of bodyListOfConstraints) {
-                this.destroyGeneric6DofConstraint(currConstraint);
-            }
-        }
+        // // destroy any constraints that might affect this body
+        // const bodyListOfConstraints = this._constraintMap1.get(bodyPtr);
+        // if (bodyListOfConstraints) {
+        //   for (const currConstraint of bodyListOfConstraints) {
+        //     this.destroyGeneric6DofConstraint(currConstraint);
+        //   }
+        // }
         // destroy any constraints that might affect this body
         const bodyListOfConstraints2 = this._constraintMap2.get(bodyPtr);
         if (bodyListOfConstraints2) {
             for (const currConstraint of bodyListOfConstraints2) {
                 this.destroyHingeConstraint(currConstraint);
+            }
+        }
+        // destroy any constraints that might affect this body
+        const bodyListOfConstraints3 = this._constraintMap3.get(bodyPtr);
+        if (bodyListOfConstraints3) {
+            for (const currConstraint3 of bodyListOfConstraints3) {
+                this.destroyGeneric6DofConstraint2(currConstraint3);
             }
         }
         // TODO: zombie bodies could still be ref/used, can it be prevented?
@@ -1513,60 +1462,60 @@ class PhysicWorld extends ContactEventHandler {
         vehicle.dispose();
         // TODO: zombie vehicles could still be ref/used, can it be prevented?
     }
-    createGeneric6DofConstraint(def) {
-        const constraint = new ConcreteGeneric6DofConstraint(def);
-        // get or create
-        const ptrA = def.bodyA._rawRigidBody.ptr;
-        let bodyListA = this._constraintMap1.get(ptrA);
-        if (!bodyListA) {
-            bodyListA = [];
-            this._constraintMap1.set(ptrA, bodyListA);
-        }
-        // save constraint against bodyA pointer value
-        bodyListA.push(constraint);
-        // get or create
-        const ptrB = def.bodyB._rawRigidBody.ptr;
-        let bodyListB = this._constraintMap1.get(ptrB);
-        if (!bodyListB) {
-            bodyListB = [];
-            this._constraintMap1.set(ptrA, bodyListB);
-        }
-        // save constraint against bodyB pointer value
-        bodyListB.push(constraint);
-        this._allConstraints1.push(constraint);
-        this._rawDynamicsWorld.addConstraint(constraint._rawConstraint, true);
-        // TODO: save in map
-        // TODO: discard if one of the body is removed
-        return constraint;
-    }
-    destroyGeneric6DofConstraint(constraint) {
-        const concrete = constraint;
-        this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
-        // remove constraints from the map value (bodyA)
-        const bodyListA = this._constraintMap1.get(concrete._bodyA._rawRigidBody.ptr);
-        if (bodyListA) {
-            // find the constraint and remove it
-            const index = bodyListA.indexOf(concrete);
-            if (index >= 0) {
-                bodyListA.splice(index, 0);
-            }
-        }
-        // remove constraints from the map (bodyB)
-        const bodyListB = this._constraintMap1.get(concrete._bodyB._rawRigidBody.ptr);
-        if (bodyListB) {
-            // find the constraint and remove it
-            const index = bodyListB.indexOf(concrete);
-            if (index >= 0) {
-                bodyListB.splice(index, 0);
-            }
-        }
-        // remove from list of all constraints
-        const index = this._allConstraints1.indexOf(concrete);
-        if (index >= 0) {
-            this._allConstraints1.splice(index, 0);
-        }
-        concrete.dispose();
-    }
+    // createGeneric6DofConstraint(def: Generic6DofConstraintDef): IGeneric6DofConstraint {
+    //   const constraint = new ConcreteGeneric6DofConstraint(def);
+    //   // get or create
+    //   const ptrA = ((def.bodyA as ConcretePhysicBody)._rawRigidBody as any).ptr;
+    //   let bodyListA = this._constraintMap1.get(ptrA);
+    //   if (!bodyListA) {
+    //     bodyListA = [];
+    //     this._constraintMap1.set(ptrA, bodyListA);
+    //   }
+    //   // save constraint against bodyA pointer value
+    //   bodyListA.push(constraint);
+    //   // get or create
+    //   const ptrB = ((def.bodyB as ConcretePhysicBody)._rawRigidBody as any).ptr;
+    //   let bodyListB = this._constraintMap1.get(ptrB);
+    //   if (!bodyListB) {
+    //     bodyListB = [];
+    //     this._constraintMap1.set(ptrA, bodyListB);
+    //   }
+    //   // save constraint against bodyB pointer value
+    //   bodyListB.push(constraint);
+    //   this._allConstraints1.push(constraint);
+    //   this._rawDynamicsWorld.addConstraint(constraint._rawConstraint, true);
+    //   // TODO: save in map
+    //   // TODO: discard if one of the body is removed
+    //   return constraint;
+    // }
+    // destroyGeneric6DofConstraint(constraint: IGeneric6DofConstraint): void {
+    //   const concrete = (constraint as ConcreteGeneric6DofConstraint);
+    //   this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
+    //   // remove constraints from the map value (bodyA)
+    //   const bodyListA = this._constraintMap1.get(((concrete._bodyA as ConcretePhysicBody)._rawRigidBody as any).ptr);
+    //   if (bodyListA) {
+    //     // find the constraint and remove it
+    //     const index = bodyListA.indexOf(concrete);
+    //     if (index >= 0) {
+    //       bodyListA.splice(index, 0);
+    //     }
+    //   }
+    //   // remove constraints from the map (bodyB)
+    //   const bodyListB = this._constraintMap1.get(((concrete._bodyB as ConcretePhysicBody)._rawRigidBody as any).ptr);
+    //   if (bodyListB) {
+    //     // find the constraint and remove it
+    //     const index = bodyListB.indexOf(concrete);
+    //     if (index >= 0) {
+    //       bodyListB.splice(index, 0);
+    //     }
+    //   }
+    //   // remove from list of all constraints
+    //   const index = this._allConstraints1.indexOf(concrete);
+    //   if (index >= 0) {
+    //     this._allConstraints1.splice(index, 0);
+    //   }
+    //   concrete.dispose();
+    // }
     createHingeConstraint(def) {
         const constraint = new ConcreteHingeConstraint(def);
         // get or create

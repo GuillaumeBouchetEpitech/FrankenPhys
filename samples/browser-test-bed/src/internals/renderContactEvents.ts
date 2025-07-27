@@ -14,7 +14,7 @@ export function renderContactEvents(scene: THREE.Scene, physicWorld: physics.Phy
 
   const maxContact = 512;
 
-  const contactGeometry = new THREE.BoxGeometry(0.15, 0.15, 1.35);
+  const contactGeometry = new THREE.BoxGeometry(0.05, 0.05, 1.35);
   const contactMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
   const contactMesh = new THREE.InstancedMesh(contactGeometry, contactMaterial, maxContact);
   contactMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); // will be updated every frame

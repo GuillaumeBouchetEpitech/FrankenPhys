@@ -23,17 +23,22 @@ const easePinPong = (t: number): number => {
   return 1.0 - t;
 };
 
-export function renderPhysicEngineDebugLines(scene: THREE.Scene, physicWorld: physics.PhysicWorld): (deltaTimeSec: number) => void {
+export function renderPhysicEngineDebugLines(
+  scene: THREE.Scene,
+  physicWorld: physics.PhysicWorld,
+  debugModeEnabled: HTMLInputElement,
+  aabbDebugModeEnabled: HTMLInputElement,
+): (deltaTimeSec: number) => void {
 
   let debugLine: THREE.LineSegments | undefined;
   let debugLineGeometry: THREE.BufferGeometry | undefined;
   const debugLineMaterial = new THREE.LineBasicMaterial({
     vertexColors: true,
-    transparent: true,     // Enable transparency
-    opacity: 0.2           // Set alpha (0.0 to 1.0)
+    // transparent: true,     // Enable transparency
+    // opacity: 0.2           // Set alpha (0.0 to 1.0)
   });
 
-  const maxSize = 1024 * 1024 * 4; // <- 4Mo
+  const maxSize = 1024 * 1024 * 32; // <- 32Mo
 
   let currVerticesIndex = 0;
   const debugLinesVertices = new Float32Array(maxSize);
@@ -81,13 +86,13 @@ export function renderPhysicEngineDebugLines(scene: THREE.Scene, physicWorld: ph
     debugLinesColors[currColorsIndex++] = b;
   });
 
-  let continuousTime = 0;
+  // let continuousTime = 0;
 
   return function syncRenderedStaticBox(deltaTimeSec: number) {
 
-    const alphaCoef = easePinPong(easeClamp(continuousTime / 2));
-    debugLineMaterial.opacity = 0.5 + alphaCoef * 0.5;
-    continuousTime += deltaTimeSec;
+    // const alphaCoef = easePinPong(easeClamp(continuousTime / 2));
+    // debugLineMaterial.opacity = 0.2 + alphaCoef * 0.8;
+    // continuousTime += deltaTimeSec;
 
     if (debugLine) {
       scene.remove(debugLine);
@@ -99,6 +104,22 @@ export function renderPhysicEngineDebugLines(scene: THREE.Scene, physicWorld: ph
 
     currVerticesIndex = 0; // reset
     currColorsIndex = 0; // reset
+
+    const showDebug = debugModeEnabled.checked === true;
+    if (!showDebug) {
+      return;
+    }
+
+    const showAABB = aabbDebugModeEnabled.checked === true;
+    let debugDrawerFlag: number = 0;
+    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
+    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraints;
+    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraintLimits;
+    if (showAABB) {
+      debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawAabb;
+    }
+    physicWorld.setDebugWireframeFeaturesFlag(debugDrawerFlag);
+
 
     physicWorld.debugDrawWorld();
 

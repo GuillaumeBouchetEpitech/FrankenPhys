@@ -43,7 +43,8 @@ https://guillaumebouchetepitech.github.io/FrankenPhys/samples/browser-test-bed/i
   * mesh
   * compound (<- group of sub shapes)
 * dynamic vehicles
-* 6dof joints (<- 6 degrees of freedom joins)
+* 6dof joints v1 (<- 6 degrees of freedom joins)
+* 6dof joints v2 (<- twice slower but many times more stable than v1)
 * hinges joints (<- this support motor torque)
 
 ### Contact events

@@ -1,6 +1,5 @@
 import { PhysicBodyDef, IPhysicBody } from "./PhysicBody";
 import { IPhysicVehicle, PhysicVehicleDef } from "./PhysicVehicle";
-import { Generic6DofConstraintDef, IGeneric6DofConstraint } from "./Generic6DofConstraint";
 import { HingeConstraintDef, IHingeConstraint } from "./HingeConstraint";
 import { Generic6DofConstraint2Def, IGeneric6DofConstraint2 } from "./Generic6DofConstraint2";
 import { ContactEventHandler, ContactDataWorld } from "./ContactEventHandler";
@@ -13,8 +12,6 @@ export declare class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     private _rawDynamicsWorld;
     private _bodyMap;
     private _vehicleMap;
-    private _constraintMap1;
-    private _allConstraints1;
     private _constraintMap2;
     private _allConstraints2;
     private _constraintMap3;
@@ -26,8 +23,6 @@ export declare class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
     destroyRigidBody(rigidBody: IPhysicBody): void;
     createVehicle(def: PhysicVehicleDef): IPhysicVehicle;
     destroyVehicle(vehicle: IPhysicVehicle): void;
-    createGeneric6DofConstraint(def: Generic6DofConstraintDef): IGeneric6DofConstraint;
-    destroyGeneric6DofConstraint(constraint: IGeneric6DofConstraint): void;
     createHingeConstraint(def: HingeConstraintDef): IHingeConstraint;
     destroyHingeConstraint(constraint: IHingeConstraint): void;
     createGeneric6DofConstraint2(def: Generic6DofConstraint2Def): IGeneric6DofConstraint2;

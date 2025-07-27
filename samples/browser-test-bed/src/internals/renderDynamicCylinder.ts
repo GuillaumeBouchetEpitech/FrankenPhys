@@ -8,6 +8,7 @@ import * as glm from "gl-matrix";
 
 
 import { getTextureMaterial } from "./getTextureMaterial";
+import { makeCellShadedCylinderGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
 
@@ -31,10 +32,8 @@ export function renderDynamicCylinder(scene: THREE.Scene, physicWorld: physics.P
 
   const material = getTextureMaterial();
 
-  const geometry = new THREE.CylinderGeometry(radius, radius, length, 32, 1 );
-  const mesh = new THREE.Mesh( geometry, material );
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  // const mesh = makeCellShadedGeometry(new THREE.CylinderGeometry(radius, radius, length, 32, 1 ), material);
+  const mesh = makeCellShadedCylinderGeometry(radius, radius, length, 32, 1, material);
   scene.add( mesh );
 
   return function syncDynamicCylinderMesh() {

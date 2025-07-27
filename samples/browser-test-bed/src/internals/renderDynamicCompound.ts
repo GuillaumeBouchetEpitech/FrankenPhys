@@ -8,6 +8,7 @@ import * as glm from "gl-matrix";
 
 
 import { getTextureMaterial } from "./getTextureMaterial";
+import { makeCellShadedBoxGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
 
@@ -59,28 +60,19 @@ export function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.P
 
   const mainObj = new THREE.Object3D();
 
-  const geometryX = new THREE.BoxGeometry(4,1,1);
-  const meshX = new THREE.Mesh( geometryX, material );
-  meshX.castShadow = true;
-  meshX.receiveShadow = true;
+  const meshX = makeCellShadedBoxGeometry([4,1,1], material);
   const subObjX = new THREE.Object3D();
   subObjX.position.set(1,0,0);
   subObjX.add(meshX);
   mainObj.add( subObjX );
 
-  const geometryY = new THREE.BoxGeometry(1,4,1);
-  const meshY = new THREE.Mesh( geometryY, material );
-  meshY.castShadow = true;
-  meshY.receiveShadow = true;
+  const meshY = makeCellShadedBoxGeometry([1,4,1], material);
   const subObjY = new THREE.Object3D();
   subObjY.position.set(0,1,0);
   subObjY.add(meshY);
   mainObj.add( subObjY );
 
-  const geometryZ = new THREE.BoxGeometry(1,1,4);
-  const meshZ = new THREE.Mesh( geometryZ, material );
-  meshZ.castShadow = true;
-  meshZ.receiveShadow = true;
+  const meshZ = makeCellShadedBoxGeometry([1,1,4], material);
   const subObjZ = new THREE.Object3D();
   subObjZ.position.set(0,0,1);
   subObjZ.add(meshZ);

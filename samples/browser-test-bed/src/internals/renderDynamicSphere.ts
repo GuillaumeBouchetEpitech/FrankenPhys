@@ -8,6 +8,7 @@ import * as glm from "gl-matrix";
 
 
 import { getTextureMaterial } from "./getTextureMaterial";
+import { makeCellShadedGeometry, makeCellShadedSphereGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
 
@@ -27,11 +28,8 @@ export function renderDynamicSphere(scene: THREE.Scene, physicWorld: physics.Phy
 
   const material = getTextureMaterial();
 
-  const geometry = new THREE.SphereGeometry( 1.0 );
-  // const geometry = new THREE.BoxGeometry( 2.0, 2.0, 2.0 );
-  const mesh = new THREE.Mesh( geometry, material );
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  const mesh = makeCellShadedSphereGeometry(1.0, material);
+
   scene.add( mesh );
 
   return function syncDynamicSphereMesh() {

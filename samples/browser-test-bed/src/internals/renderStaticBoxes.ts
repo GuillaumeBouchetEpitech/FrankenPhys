@@ -8,6 +8,8 @@ import * as glm from "gl-matrix";
 
 
 import { getTextureMaterial } from "./getTextureMaterial";
+import { makeCellShadedBoxGeometry } from "./makeCellShadedGeometry";
+
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
 
@@ -36,16 +38,12 @@ export function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.Physi
   staticBoxB.setFriction(0.1);
 
   const material = getTextureMaterial();
-  const geometryAB = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
+  // const geometryAB = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
 
-  const boxMeshA = new THREE.Mesh( geometryAB, material );
-  boxMeshA.castShadow = true;
-  boxMeshA.receiveShadow = true;
+  const boxMeshA = makeCellShadedBoxGeometry([32,32,2], material);
   scene.add( boxMeshA );
 
-  const boxMeshB = new THREE.Mesh( geometryAB, material );
-  boxMeshB.castShadow = true;
-  boxMeshB.receiveShadow = true;
+  const boxMeshB = makeCellShadedBoxGeometry([32,32,2], material);
   scene.add( boxMeshB );
 
   return function syncRenderedStaticBox() {

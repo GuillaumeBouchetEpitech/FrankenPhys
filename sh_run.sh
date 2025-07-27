@@ -67,8 +67,8 @@ case ${USER_INPUT} in
   2)
     echo "=> ts samples basic"
 
-    # npm run bunjs-build-basic-debug
-    npm run rollupjs-build-basic-release
+    npm run bunjs-build-basic-debug
+    # npm run rollupjs-build-basic-release
     ;;
   3)
     echo "=> ts samples server"
@@ -80,6 +80,7 @@ case ${USER_INPUT} in
     echo "=> make release"
 
     npm run make-release
+    npm run rollupjs-build-basic-release
     ;;
   *)
     echo "=> INVALID CHOICE"

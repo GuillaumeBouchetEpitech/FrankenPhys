@@ -6,8 +6,9 @@ import * as THREE from "three";
 
 import * as glm from "gl-matrix";
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getTextureMaterial, getBackSideMaterial } from "./getTextureMaterial";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
+import { makeCellShadedBoxGeometry } from "samples/browser-test-bed/src/internals/makeCellShadedGeometry";
 
 
 export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
@@ -80,8 +81,8 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
     });
     constraint.setLinearLowerLimit([0,0,0]);
     constraint.setLinearUpperLimit([0,0,0]);
-    constraint.setAngularLowerLimit([-0.8,-0.8,-0.8]);
-    constraint.setAngularUpperLimit([+0.8,+0.8,+0.8]);
+    constraint.setAngularLowerLimit([-0.25 * Math.PI,-0.25 * Math.PI,-0.25 * Math.PI]);
+    constraint.setAngularUpperLimit([+0.25 * Math.PI,+0.25 * Math.PI,+0.25 * Math.PI]);
   };
 
   _makeConstraint(bodyA, bodyB);
@@ -90,40 +91,52 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
   _makeConstraint(bodyD, bodyE);
 
   const material = getTextureMaterial();
+  // const backMaterial = getBackSideMaterial();
 
-  const geometryA = new THREE.BoxGeometry( 2.0, 0.5, 1.0 );
-  const geometryB = new THREE.BoxGeometry( 2.0, 1.0, 0.5 );
+  // const geometryA = new THREE.BoxGeometry( 2.0 - 0.05, 0.5 - 0.05, 1.0 - 0.05 );
+  // const geometryB = new THREE.BoxGeometry( 2.0 - 0.05, 1.0 - 0.05, 0.5 - 0.05 );
 
-  const meshA = new THREE.Mesh( geometryA, material );
-  meshA.castShadow = true;
-  meshA.receiveShadow = true;
-  scene.add( meshA );
+  // const _makeCellShadedGeometry = (inGeo: THREE.BufferGeometry): THREE.Object3D => {
 
-  const meshB = new THREE.Mesh( geometryB, material );
-  meshB.castShadow = true;
-  meshB.receiveShadow = true;
-  scene.add( meshB );
+  //   const frontGeo = inGeo.clone();
+  //   const backGeo = inGeo.clone();
+  //   frontGeo.scale(1-0.05, 1-0.05, 1-0.05);
+  //   backGeo.scale(1+0.05, 1+0.05, 1+0.05);
 
-  const meshC = new THREE.Mesh( geometryA, material );
-  meshC.castShadow = true;
-  meshC.receiveShadow = true;
-  scene.add( meshC );
+  //   const object = new THREE.Object3D();
+  //   const mesh = new THREE.Mesh(frontGeo, material);
+  //   mesh.castShadow = true;
+  //   mesh.receiveShadow = true;
+  //   object.add(mesh);
+  //   const backMesh = new THREE.Mesh(backGeo, backMaterial);
+  //   backMesh.castShadow = false;
+  //   backMesh.receiveShadow = false;
+  //   object.add(backMesh);
+  //   // scene.add(object);
 
-  const meshD = new THREE.Mesh( geometryB, material );
-  meshD.castShadow = true;
-  meshD.receiveShadow = true;
-  scene.add( meshD );
+  //   return object;
+  // };
 
-  const meshE = new THREE.Mesh( geometryA, material );
-  meshE.castShadow = true;
-  meshE.receiveShadow = true;
-  scene.add( meshE );
+  const objectA = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  scene.add(objectA);
+
+  const objectB = makeCellShadedBoxGeometry([2, 1, 0.5], material, 0.05);
+  scene.add(objectB);
+
+  const objectC = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  scene.add(objectC);
+
+  const objectD = makeCellShadedBoxGeometry([2, 1, 0.5], material, 0.05);
+  scene.add(objectD);
+
+  const objectE = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  scene.add(objectE);
 
   return function syncDynamicBoxMesh() {
-    syncMeshWithRigidBody(meshA, bodyA);
-    syncMeshWithRigidBody(meshB, bodyB);
-    syncMeshWithRigidBody(meshC, bodyC);
-    syncMeshWithRigidBody(meshD, bodyD);
-    syncMeshWithRigidBody(meshE, bodyE);
+    syncMeshWithRigidBody(objectA, bodyA);
+    syncMeshWithRigidBody(objectB, bodyB);
+    syncMeshWithRigidBody(objectC, bodyC);
+    syncMeshWithRigidBody(objectD, bodyD);
+    syncMeshWithRigidBody(objectE, bodyE);
   }
 }
