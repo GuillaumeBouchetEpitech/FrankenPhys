@@ -14,6 +14,7 @@ import { makeCellShadedBoxGeometry } from "samples/browser-test-bed/src/internal
 export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWorld: physics.PhysicWorld): () => void {
 
   const originX = -5;
+  const originZ = 4.5;
 
   const bodyA = physicWorld.createRigidBody({
     mass: 0,
@@ -21,7 +22,7 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX, 4,5],
+    position: [originX, 4,originZ],
     orientation: [0, 0,0,1]
   });
   bodyA.setFriction(0.1);
@@ -32,7 +33,7 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
       type: 'box',
       size: [2,1,0.5]
     },
-    position: [originX+2, 4,5],
+    position: [originX+2, 4,originZ],
     orientation: [0, 0,0,1]
   });
   bodyB.setFriction(0.1);
@@ -43,7 +44,7 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX+4, 4,5],
+    position: [originX+4, 4,originZ],
     orientation: [0, 0,0,1]
   });
   bodyC.setFriction(0.1);
@@ -54,7 +55,7 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
       type: 'box',
       size: [2,1,0.5]
     },
-    position: [originX+6, 4,5],
+    position: [originX+6, 4,originZ],
     orientation: [0, 0,0,1]
   });
   bodyD.setFriction(0.1);
@@ -65,7 +66,7 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
       type: 'box',
       size: [2,0.5,1]
     },
-    position: [originX+8, 4,5],
+    position: [originX+8, 4,originZ],
     orientation: [0, 0,0,1]
   });
   bodyE.setFriction(0.1);
@@ -91,31 +92,6 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
   _makeConstraint(bodyD, bodyE);
 
   const material = getTextureMaterial();
-  // const backMaterial = getBackSideMaterial();
-
-  // const geometryA = new THREE.BoxGeometry( 2.0 - 0.05, 0.5 - 0.05, 1.0 - 0.05 );
-  // const geometryB = new THREE.BoxGeometry( 2.0 - 0.05, 1.0 - 0.05, 0.5 - 0.05 );
-
-  // const _makeCellShadedGeometry = (inGeo: THREE.BufferGeometry): THREE.Object3D => {
-
-  //   const frontGeo = inGeo.clone();
-  //   const backGeo = inGeo.clone();
-  //   frontGeo.scale(1-0.05, 1-0.05, 1-0.05);
-  //   backGeo.scale(1+0.05, 1+0.05, 1+0.05);
-
-  //   const object = new THREE.Object3D();
-  //   const mesh = new THREE.Mesh(frontGeo, material);
-  //   mesh.castShadow = true;
-  //   mesh.receiveShadow = true;
-  //   object.add(mesh);
-  //   const backMesh = new THREE.Mesh(backGeo, backMaterial);
-  //   backMesh.castShadow = false;
-  //   backMesh.receiveShadow = false;
-  //   object.add(backMesh);
-  //   // scene.add(object);
-
-  //   return object;
-  // };
 
   const objectA = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
   scene.add(objectA);

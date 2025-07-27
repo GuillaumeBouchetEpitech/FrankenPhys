@@ -32,7 +32,6 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
   });
   bodyStaticGround.setFriction(10.0);
 
-  // const geometryStaticGround = new THREE.BoxGeometry( 20.0, 20.0, 1.0 );
   const boxMeshStaticGround = makeCellShadedBoxGeometry([ 20.0, 20.0, 1.0 ], material)
   scene.add( boxMeshStaticGround );
 
@@ -62,11 +61,6 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
   bodyMain.setFriction(10.0);
   bodyMain.disableDeactivation();
 
-  // const geometryBody = new THREE.BoxGeometry(mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]);
-
-  // const meshMain = new THREE.Mesh( geometryBody, material );
-  // meshMain.castShadow = true;
-  // meshMain.receiveShadow = true;
   const meshMain = makeCellShadedBoxGeometry([mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]], material)
   scene.add( meshMain );
 
@@ -128,23 +122,10 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
             position: [isBackLeg ? -1 : +1,0,0],
             orientation: [0.25 * Math.PI, 0,0,1],
             shape: {
-              // type: 'sphere',
-              // radius: 0.25
               type: 'box',
               size: [0.25,1,1]
-              // size: [0.25,1,0.25]
             }
           },
-          // {
-          //   position: [isBackLeg ? -1 : +1,0,0],
-          //   orientation: [0.25 * Math.PI, 0,0,1],
-          //   shape: {
-          //     // type: 'sphere',
-          //     // radius: 0.25
-          //     type: 'box',
-          //     size: [0.25,0.25,1]
-          //   }
-          // },
         ]
       },
       position: posForeleg,
@@ -152,33 +133,16 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
     };
 
     const bodyLegBase = physicWorld.createRigidBody(bodyDefLegBase);
-    // bodyLegBase.setPosition(posLeg[0], posLeg[1], posLeg[2]);
     bodyLegBase.setFriction(10.0);
     bodyLegBase.disableDeactivation();
 
     const bodyLeg = physicWorld.createRigidBody(bodyDefLeg);
-    // bodyLeg.setPosition(posLeg[0], posLeg[1], posLeg[2]);
     bodyLeg.setFriction(10.0);
     bodyLeg.disableDeactivation();
 
     const bodyForeleg = physicWorld.createRigidBody(bodyDefForeleg);
-    // bodyForeleg.setPosition(posForeleg[0], posForeleg[1], posForeleg[2]);
     bodyForeleg.setFriction(10.0);
     bodyForeleg.disableDeactivation();
-
-    // const bodyFoot = physicWorld.createRigidBody({
-    //   mass: 0.01,
-    //   shape: {
-    //     type: 'sphere',
-    //     radius: 0.6
-    //     // type: 'box',
-    //     // size: [0.6,0.6,0.6]
-    //   },
-    //   position: [posForeleg[0] + 1, posForeleg[1], posForeleg[2]],
-    //   orientation: [0, 0,0,1],
-    // });
-    // // bodyFoot.setPosition(1000, 0, 0);
-    // bodyFoot.setFriction(1.0);
 
     const constraintBodyLegBase = physicWorld.createHingeConstraint({
       bodyA: bodyMain,
@@ -210,16 +174,6 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
       useReferenceFrameA: true
     });
 
-    // const constraintForelegFoot = physicWorld.createHingeConstraint({
-    //   bodyA: bodyForeleg,
-    //   bodyB: bodyFoot,
-    //   pivotInA: [isBackLeg ? -1 : +1, 0,0],
-    //   pivotInB: [0,0,0],
-    //   axisInA: [0,1,0],
-    //   axisInB: [0,1,0],
-    //   useReferenceFrameA: true
-    // });
-
 
 
     if (isBackLeg) {
@@ -238,73 +192,27 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
     constraintLegForeleg.enableMotor(true);
     constraintLegForeleg.setMaxMotorImpulse(20);
 
-    // constraintForelegFoot.setLimit(0, 0, 0.0, 0.0, 0.0);
-
-    // // const geometryBaseLeg = new THREE.BoxGeometry( 1.0, 1.0, 1.0 );
-    // const geometryBaseLeg = new THREE.SphereGeometry( 0.5 );
-
-
-    // const geometryLeg = new THREE.BoxGeometry( 2.0, 0.5, 0.5 );
-    // // const geometryFoot = new THREE.SphereGeometry( 0.25 );
-    // // const geometryFoot1 = new THREE.BoxGeometry( 0.25, 0.25, 1 );
-    // const geometryFoot1 = new THREE.BoxGeometry( 0.25, 1, 1 );
-    // // const geometryFoot2 = new THREE.BoxGeometry( 0.25, 1, 0.25 );
-
-    // const meshBaseLeg = new THREE.Mesh( geometryBaseLeg, material );
-    // meshBaseLeg.castShadow = true;
-    // meshBaseLeg.receiveShadow = true;
     const meshBaseLeg = makeCellShadedBoxGeometry([ 1.0, 1.0, 1.0 ], material)
     scene.add( meshBaseLeg );
 
-    // const meshLeg = new THREE.Mesh( geometryLeg, material );
-    // meshLeg.castShadow = true;
-    // meshLeg.receiveShadow = true;
     const meshLeg = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material)
     scene.add( meshLeg );
-
-    // const meshLegForeleg = new THREE.Mesh( geometryLeg, material );
-    // meshLegForeleg.castShadow = true;
-    // meshLegForeleg.receiveShadow = true;
-    // scene.add( meshLegForeleg );
 
     const meshLegForeleg = new THREE.Object3D();
     scene.add( meshLegForeleg );
 
-    // const geometryForeLeg = new THREE.BoxGeometry(4,1,1);
-    // const meshX = new THREE.Mesh( geometryLeg, material );
     const meshX = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material)
-    // meshX.castShadow = true;
-    // meshX.receiveShadow = true;
     const subObjX = new THREE.Object3D();
     subObjX.position.set(0,0,0);
     subObjX.add(meshX);
     meshLegForeleg.add( subObjX );
 
-    // const meshFoot1 = new THREE.Mesh( geometryFoot1, material );
     const meshFoot1 = makeCellShadedBoxGeometry([ 0.25, 0.25, 0.25 ], material)
-    // meshFoot1.castShadow = true;
-    // meshFoot1.receiveShadow = true;
     const subObjFoot1 = new THREE.Object3D();
     subObjFoot1.position.set(isBackLeg ? -1 : +1,0,0);
     subObjFoot1.quaternion.set(1,0,0, 0.5 * Math.PI);
     subObjFoot1.add(meshFoot1);
     meshLegForeleg.add( subObjFoot1 );
-
-    // const meshFoot2 = new THREE.Mesh( geometryFoot2, material );
-    // meshFoot2.castShadow = true;
-    // meshFoot2.receiveShadow = true;
-    // const subObjFoot2 = new THREE.Object3D();
-    // subObjFoot2.position.set(isBackLeg ? -1 : +1,0,0);
-    // subObjFoot2.quaternion.set(1,0,0, 0.25 * Math.PI);
-    // subObjFoot2.add(meshFoot2);
-    // meshLegForeleg.add( subObjFoot2 );
-
-
-    // const meshFoot = new THREE.Mesh( geometryFoot, material );
-    // meshFoot.castShadow = true;
-    // meshFoot.receiveShadow = true;
-    // scene.add( meshFoot );
-
 
     let timeLeftBeforeNextFrame = 2.0;
 
@@ -347,13 +255,10 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
 
       const coef = 1 - timeLeftBeforeNextFrame / currFrame.duration;
 
-      // console.log({ coef })
-
       let angleBase = currFrame.base + (nextFrame.base - currFrame.base) * coef;
       let angleForeleg = currFrame.foreleg + (nextFrame.foreleg - currFrame.foreleg) * coef;
       let angleLeg = currFrame.leg + (nextFrame.leg - currFrame.leg) * coef;
 
-      // let angleBase = +currFrame.base;
       if (isBackLeg && !isLeftLeg) {
         angleBase = -angleBase;
       } else if (!isBackLeg && isLeftLeg) {

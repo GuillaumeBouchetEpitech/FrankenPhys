@@ -26,8 +26,10 @@ export declare class ConcreteGeneric6DofConstraint2 implements IGeneric6DofConst
     _rawConstraint: FrankenPhys.bjtsGeneric6DofSpring2Constraint;
     _bodyA: IPhysicBody;
     _bodyB: IPhysicBody;
+    private _isAlive;
     constructor(def: Generic6DofConstraint2Def);
     dispose(): void;
+    isAlive(): boolean;
     setLinearLowerLimit(val: glm.ReadonlyVec3): void;
     setLinearUpperLimit(val: glm.ReadonlyVec3): void;
     setAngularLowerLimit(val: glm.ReadonlyVec3): void;

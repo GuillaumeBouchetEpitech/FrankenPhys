@@ -38,7 +38,6 @@ export function renderStaticBoxes(scene: THREE.Scene, physicWorld: physics.Physi
   staticBoxB.setFriction(0.1);
 
   const material = getTextureMaterial();
-  // const geometryAB = new THREE.BoxGeometry( 32.0, 32.0, 2.0 );
 
   const boxMeshA = makeCellShadedBoxGeometry([32,32,2], material);
   scene.add( boxMeshA );

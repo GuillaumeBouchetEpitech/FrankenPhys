@@ -124,8 +124,6 @@ export const makeCellShadedGeometry = (
   const frontGeo = inGeo.clone();
   const backGeo = inGeo.clone();
 
-  // frontGeo.scale(1-customScale, 1-customScale, 1-customScale);
-  // backGeo.scale(1+customScale, 1+customScale, 1+customScale);
   frontGeo.scale(1-customScale*2, 1-customScale*2, 1-customScale*2);
   backGeo.scale(1, 1, 1);
 

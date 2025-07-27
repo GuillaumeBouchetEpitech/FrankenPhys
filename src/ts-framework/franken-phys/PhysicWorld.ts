@@ -224,7 +224,7 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
           cleanup: () => {
             bullet.destroy(rawCompound);
             for (const currRawShape of allRawShapes) {
-              bullet.destroy(currRawShape);
+              currRawShape.cleanup();
             }
           },
         };
@@ -478,33 +478,50 @@ export class PhysicWorld extends ContactEventHandler<ContactDataWorld> {
   destroyGeneric6DofConstraint2(constraint: IGeneric6DofConstraint2): void {
 
     const concrete = (constraint as ConcreteGeneric6DofConstraint2);
-
-    this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
-
-    // remove constraints from the map value (bodyA)
-    const bodyListA = this._constraintMap3.get(((concrete._bodyA as ConcretePhysicBody)._rawRigidBody as any).ptr);
-    if (bodyListA) {
-      // find the constraint and remove it
-      const index = bodyListA.indexOf(concrete);
-      if (index >= 0) {
-        bodyListA.splice(index, 0);
-      }
-    }
-
-    // remove constraints from the map (bodyB)
-    const bodyListB = this._constraintMap3.get(((concrete._bodyB as ConcretePhysicBody)._rawRigidBody as any).ptr);
-    if (bodyListB) {
-      // find the constraint and remove it
-      const index = bodyListB.indexOf(concrete);
-      if (index >= 0) {
-        bodyListB.splice(index, 0);
-      }
+    if (!concrete.isAlive()) {
+      return;
     }
 
     // remove from list of all constraints
     const index = this._allConstraints3.indexOf(concrete);
-    if (index >= 0) {
-      this._allConstraints3.splice(index, 0);
+    if (index < 0) {
+      // already disposed of -> skip
+      // -> possible if one of the bodies was destroyed first
+      return;
+    }
+
+    this._allConstraints3.splice(index, 0);
+
+    this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
+
+    // remove constraints from the map value (bodyA)
+    const concreteBodyA = (concrete._bodyA as ConcretePhysicBody);
+    if (concreteBodyA.isAlive()) {
+      const bodyA_ptr = (concreteBodyA._rawRigidBody as any).ptr;
+      const bodyListA = this._constraintMap3.get(bodyA_ptr);
+      if (bodyListA) {
+        this._constraintMap3.delete(bodyA_ptr);
+        // find the constraint and remove it
+        const index = bodyListA.indexOf(concrete);
+        if (index >= 0) {
+          bodyListA.splice(index, 0);
+        }
+      }
+    }
+
+    // remove constraints from the map (bodyB)
+    const concreteBodyB = (concrete._bodyB as ConcretePhysicBody);
+    if (concreteBodyB.isAlive()) {
+      const bodyB_ptr = (concreteBodyB._rawRigidBody as any).ptr;
+      const bodyListB = this._constraintMap3.get(bodyB_ptr);
+      if (bodyListB) {
+        this._constraintMap3.delete(bodyB_ptr);
+        // find the constraint and remove it
+        const index = bodyListB.indexOf(concrete);
+        if (index >= 0) {
+          bodyListB.splice(index, 0);
+        }
+      }
     }
 
     concrete.dispose();

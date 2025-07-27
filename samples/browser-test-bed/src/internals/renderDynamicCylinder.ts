@@ -32,7 +32,6 @@ export function renderDynamicCylinder(scene: THREE.Scene, physicWorld: physics.P
 
   const material = getTextureMaterial();
 
-  // const mesh = makeCellShadedGeometry(new THREE.CylinderGeometry(radius, radius, length, 32, 1 ), material);
   const mesh = makeCellShadedCylinderGeometry(radius, radius, length, 32, 1, material);
   scene.add( mesh );
 

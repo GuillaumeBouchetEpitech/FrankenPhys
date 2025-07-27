@@ -28,7 +28,7 @@ export function getTextureMaterial2() {
   }
 
   const textureLoader = new THREE.TextureLoader();
-  const mapGrid = textureLoader.load('../textures/grid-green.png');
+  const mapGrid = textureLoader.load('../textures/grid-yellow.png');
   mapGrid.wrapS = mapGrid.wrapT = THREE.RepeatWrapping;
   mapGrid.minFilter = THREE.NearestFilter;
   mapGrid.magFilter = THREE.NearestFilter;
@@ -38,23 +38,23 @@ export function getTextureMaterial2() {
   return texturedMaterial2;
 }
 
-let texturedMaterial3: undefined | THREE.MeshPhongMaterial;
-export function getTextureMaterial3() {
+// let texturedMaterial3: undefined | THREE.MeshPhongMaterial;
+// export function getTextureMaterial3() {
 
-  if (texturedMaterial3) {
-    return texturedMaterial3;
-  }
+//   if (texturedMaterial3) {
+//     return texturedMaterial3;
+//   }
 
-  const textureLoader = new THREE.TextureLoader();
-  const mapGrid = textureLoader.load('../textures/grid-red.png');
-  mapGrid.wrapS = mapGrid.wrapT = THREE.RepeatWrapping;
-  mapGrid.minFilter = THREE.NearestFilter;
-  mapGrid.magFilter = THREE.NearestFilter;
+//   const textureLoader = new THREE.TextureLoader();
+//   const mapGrid = textureLoader.load('../textures/grid-red.png');
+//   mapGrid.wrapS = mapGrid.wrapT = THREE.RepeatWrapping;
+//   mapGrid.minFilter = THREE.NearestFilter;
+//   mapGrid.magFilter = THREE.NearestFilter;
 
-  texturedMaterial3 = new THREE.MeshPhongMaterial({ map: mapGrid });
+//   texturedMaterial3 = new THREE.MeshPhongMaterial({ map: mapGrid });
 
-  return texturedMaterial3;
-}
+//   return texturedMaterial3;
+// }
 
 let backSideMaterial: undefined | THREE.Material;
 export function getBackSideMaterial() {

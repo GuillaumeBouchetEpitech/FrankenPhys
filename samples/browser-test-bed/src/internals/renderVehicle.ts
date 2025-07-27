@@ -70,49 +70,15 @@ export function renderVehicle(scene: THREE.Scene, physicWorld: physics.PhysicWor
   dynamicVehicle.setSteeringValue(1, steeringAngle); // front wheel
   dynamicVehicle.applyEngineForce(2, 40); // rear wheel
   dynamicVehicle.applyEngineForce(3, 40); // rear wheel
-  // dynamicVehicle.setSteeringValue(0, steeringAngle); // front wheel
-  // dynamicVehicle.setSteeringValue(1, steeringAngle); // front wheel
-
-  // dynamicVehicle.getChassisBody().disableDeactivation();
-  // dynamicVehicle.applyEngineForce(0, -80); // front wheel
-  // dynamicVehicle.applyEngineForce(1, 80); // front wheel
-  // dynamicVehicle.applyEngineForce(2, 80); // rear wheel
-  // dynamicVehicle.applyEngineForce(3, -80); // rear wheel
-
-
 
   const material = getTextureMaterial();
 
-  // const geometry = new THREE.BoxGeometry( 2.0, 4.0, 1.0 );
-  // const vehicleMesh = new THREE.Mesh( geometry, material );
-  // vehicleMesh.castShadow = true;
-  // vehicleMesh.receiveShadow = true;
-  // const vehicleMesh = makeCellShadedGeometry(new THREE.BoxGeometry( 2.0, 4.0, 1.0 ), material)
   const vehicleMesh = makeCellShadedBoxGeometry([2.0, 4.0, 1.0], material);
   scene.add( vehicleMesh );
 
-  // vehicleMesh = mesh;
-
   const wheelsMesh: THREE.Object3D[] = [];
   {
-    // const wheelGeometry = new THREE.CylinderGeometry(vehicleDef.wheelRadius, vehicleDef.wheelRadius, vehicleDef.wheelWidth, 20, 1);
-    // const wheelGeometry = makeCellShadedCylinderGeometry(vehicleDef.wheelRadius, vehicleDef.wheelRadius, vehicleDef.wheelWidth, 20, 1, material);
-
-    // {
-    //   // const matrix = new THREE.Matrix4();
-    //   // matrix.identity();
-    //   // matrix.makeRotationZ(Math.PI / 2);
-    //   // wheelGeometry.applyMatrix4(matrix);
-    //   // wheelGeometry.rotateX(Math.PI * 0.5);
-    // }
-
     for (let ii = 0; ii < vehicleDef.wheels.length; ++ii) {
-      // // const mesh = new THREE.Mesh( wheelGeometry, material );
-      // // mesh.castShadow = true;
-      // // mesh.receiveShadow = true;
-      // const mesh = makeCellShadedGeometry(wheelGeometry, material)
-      // scene.add( mesh );
-      // wheelsMesh.push(mesh);
 
       const wheelGeometry = makeCellShadedCylinderGeometry(vehicleDef.wheelRadius, vehicleDef.wheelRadius, vehicleDef.wheelWidth, 20, 1, material);
       wheelGeometry.children.forEach((childGeo) => {

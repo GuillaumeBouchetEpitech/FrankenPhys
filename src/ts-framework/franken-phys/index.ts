@@ -2,12 +2,30 @@
 export * from "./ContactEventHandler"
 export * from "./convexSweep"
 export * from "./WasmModuleHolder"
-export * from "./PhysicBody"
+
+// export * from "./PhysicBody"
+export {
+  PrimitivesPhysicBoxShapeDef,
+  PrimitivesPhysicSphereShapeDef,
+  PrimitivesPhysicCylinderShapeDef,
+  PrimitivesPhysicCapsuleShapeDef,
+  PrimitivesPhysicMeshShapeDef,
+  PrimitivesPhysicShapeDef,
+  PrimitivesPhysicCompoundShapeDef,
+  PhysicShapeDef,
+  PhysicBodyDef,
+  IPhysicBody
+} from "./PhysicBody"
+
+export {
+  RotationOrder,
+  IGeneric6DofConstraint2,
+  Generic6DofConstraint2Def
+} from "./Generic6DofConstraint2"
+
 export * from "./PhysicVehicle"
 export * from "./PhysicWorld"
 export * from "./rayCast"
-
-export { RotationOrder } from "./Generic6DofConstraint2"
 
 export enum DebugDrawFlags {
   DBG_NoDebug = 0,

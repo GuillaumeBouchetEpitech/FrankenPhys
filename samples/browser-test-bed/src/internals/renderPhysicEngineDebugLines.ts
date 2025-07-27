@@ -4,25 +4,6 @@ import { physics } from "../../../..";
 
 import * as THREE from "three";
 
-import * as glm from "gl-matrix";
-
-import { getTextureMaterial } from "./getTextureMaterial";
-import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
-
-const easeClamp = (t: number) => {
-  if (t > 1) {
-    return t - Math.floor(t);
-  }
-  return t;
-};
-
-const easePinPong = (t: number): number => {
-  t *= 2.0;
-  if (t < 1.0) return t;
-  t -= 1.0;
-  return 1.0 - t;
-};
-
 export function renderPhysicEngineDebugLines(
   scene: THREE.Scene,
   physicWorld: physics.PhysicWorld,
@@ -47,7 +28,7 @@ export function renderPhysicEngineDebugLines(
 
   // all (?) the debug rendering feature flag
   let debugDrawerFlag: number = 0;
-  debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
+  // debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
   // debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawAabb;
   // debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawContactPoints;
   // debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraints;
@@ -86,13 +67,7 @@ export function renderPhysicEngineDebugLines(
     debugLinesColors[currColorsIndex++] = b;
   });
 
-  // let continuousTime = 0;
-
   return function syncRenderedStaticBox(deltaTimeSec: number) {
-
-    // const alphaCoef = easePinPong(easeClamp(continuousTime / 2));
-    // debugLineMaterial.opacity = 0.2 + alphaCoef * 0.8;
-    // continuousTime += deltaTimeSec;
 
     if (debugLine) {
       scene.remove(debugLine);
@@ -106,15 +81,17 @@ export function renderPhysicEngineDebugLines(
     currColorsIndex = 0; // reset
 
     const showDebug = debugModeEnabled.checked === true;
-    if (!showDebug) {
+    const showAABB = aabbDebugModeEnabled.checked === true;
+    if (!showDebug && !showAABB) {
       return;
     }
 
-    const showAABB = aabbDebugModeEnabled.checked === true;
     let debugDrawerFlag: number = 0;
-    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
-    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraints;
-    debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraintLimits;
+    if (showDebug) {
+      debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawWireframe;
+      debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraints;
+      debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawConstraintLimits;
+    }
     if (showAABB) {
       debugDrawerFlag |= physics.DebugDrawFlags.DBG_DrawAabb;
     }

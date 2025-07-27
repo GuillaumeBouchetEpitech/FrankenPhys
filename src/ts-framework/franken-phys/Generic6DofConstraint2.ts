@@ -40,6 +40,8 @@ export class ConcreteGeneric6DofConstraint2 implements IGeneric6DofConstraint2 {
   public _bodyA: IPhysicBody;
   public _bodyB: IPhysicBody;
 
+  private _isAlive: boolean = true;
+
   constructor(def: Generic6DofConstraint2Def) {
 
     this._bodyA = def.bodyA;
@@ -87,6 +89,12 @@ export class ConcreteGeneric6DofConstraint2 implements IGeneric6DofConstraint2 {
     const bullet = WasmModuleHolder.get();
 
     bullet.destroy(this._rawConstraint);
+
+    this._isAlive = false;
+  }
+
+  isAlive(): boolean {
+    return this._isAlive;
   }
 
   setLinearLowerLimit(val: glm.ReadonlyVec3): void {

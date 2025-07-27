@@ -827,6 +827,147 @@ const convexSweep = (rawDynamicsWorld, def) => {
     return { fraction, impact, normal };
 };
 
+// btGeneric6DofConstraint2
+var RotationOrder;
+(function (RotationOrder) {
+    RotationOrder[RotationOrder["XYZ"] = 0] = "XYZ";
+    RotationOrder[RotationOrder["XZY"] = 1] = "XZY";
+    RotationOrder[RotationOrder["YXZ"] = 2] = "YXZ";
+    RotationOrder[RotationOrder["YZX"] = 3] = "YZX";
+    RotationOrder[RotationOrder["ZXY"] = 4] = "ZXY";
+    RotationOrder[RotationOrder["ZYX"] = 5] = "ZYX";
+})(RotationOrder || (RotationOrder = {}));
+class ConcreteGeneric6DofConstraint2 {
+    constructor(def) {
+        this._isAlive = true;
+        this._bodyA = def.bodyA;
+        this._bodyB = def.bodyB;
+        const bullet = WasmModuleHolder.get();
+        const rawRigidBodyA = def.bodyA._rawRigidBody;
+        const rawRigidBodyB = def.bodyB._rawRigidBody;
+        const newRotation = new bullet.btQuaternion(0, 0, 1, 0);
+        const newPositionA = new bullet.btVector3(def.frameA[0], def.frameA[1], def.frameA[2]);
+        const newTransformA = new bullet.btTransform(newRotation, newPositionA);
+        const newPositionB = new bullet.btVector3(def.frameB[0], def.frameB[1], def.frameB[2]);
+        const newTransformB = new bullet.btTransform(newRotation, newPositionB);
+        this._rawConstraint = new bullet.bjtsGeneric6DofSpring2Constraint(rawRigidBodyA, rawRigidBodyB, newTransformA, newTransformB, def.rotationOrder);
+        this._rawConstraint.enableSpring(0, false);
+        this._rawConstraint.enableSpring(1, false);
+        this._rawConstraint.enableSpring(2, false);
+        this._rawConstraint.setStiffness(0, 1);
+        this._rawConstraint.setStiffness(1, 1);
+        this._rawConstraint.setStiffness(2, 1);
+        this._rawConstraint.setDamping(0, 1);
+        this._rawConstraint.setDamping(1, 1);
+        this._rawConstraint.setDamping(2, 1);
+        bullet.destroy(newTransformA);
+        bullet.destroy(newTransformB);
+        bullet.destroy(newPositionA);
+        bullet.destroy(newPositionB);
+        bullet.destroy(newRotation);
+    }
+    dispose() {
+        const bullet = WasmModuleHolder.get();
+        bullet.destroy(this._rawConstraint);
+        this._isAlive = false;
+    }
+    isAlive() {
+        return this._isAlive;
+    }
+    setLinearLowerLimit(val) {
+        const bullet = WasmModuleHolder.get();
+        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
+        this._rawConstraint.setLinearLowerLimit(newVal);
+        bullet.destroy(newVal);
+    }
+    setLinearUpperLimit(val) {
+        const bullet = WasmModuleHolder.get();
+        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
+        this._rawConstraint.setLinearUpperLimit(newVal);
+        bullet.destroy(newVal);
+    }
+    setAngularLowerLimit(val) {
+        const bullet = WasmModuleHolder.get();
+        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
+        this._rawConstraint.setAngularLowerLimit(newVal);
+        bullet.destroy(newVal);
+    }
+    setAngularUpperLimit(val) {
+        const bullet = WasmModuleHolder.get();
+        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
+        this._rawConstraint.setAngularUpperLimit(newVal);
+        bullet.destroy(newVal);
+    }
+}
+
+class ConcretePhysicVehicle {
+    constructor(rawDynamicsWorld, chassisBody, def) {
+        const bullet = WasmModuleHolder.get();
+        this._chassisBody = chassisBody;
+        this._vehicleTuning = new bullet.btVehicleTuning();
+        this._defaultVehicleRaycaster = new bullet.btDefaultVehicleRaycaster(rawDynamicsWorld);
+        this._rawVehicle = new bullet.btRaycastVehicle(this._vehicleTuning, chassisBody._rawRigidBody, this._defaultVehicleRaycaster);
+        this._rawVehicle.setCoordinateSystem(def.coordinateSystem[0], def.coordinateSystem[1], def.coordinateSystem[2]);
+        const groundDirection = new bullet.btVector3(def.groundDirection[0], def.groundDirection[1], def.groundDirection[2]);
+        const rotationAxis = new bullet.btVector3(def.rotationAxis[0], def.rotationAxis[1], def.rotationAxis[2]);
+        const connectionPoint = new bullet.btVector3();
+        for (let ii = 0; ii < def.wheels.length; ++ii) {
+            const current = def.wheels[ii];
+            connectionPoint.setValue(current.connectionPoint[0], current.connectionPoint[1], current.connectionPoint[2]);
+            const wheelInfo = this._rawVehicle.addWheel(connectionPoint, // connectionPointCS0,
+            groundDirection, // wheelDirectionCS0,
+            rotationAxis, // wheelAxleCS,
+            def.suspensionRestLength, def.wheelRadius, this._vehicleTuning, current.isFrontWheel);
+            wheelInfo.set_m_suspensionStiffness(def.suspensionStiffness);
+            wheelInfo.set_m_wheelsDampingRelaxation(def.wheelsDampingRelaxation);
+            wheelInfo.set_m_wheelsDampingCompression(def.wheelsDampingCompression);
+            wheelInfo.set_m_frictionSlip(def.wheelFriction);
+            wheelInfo.set_m_rollInfluence(def.rollInfluence);
+        }
+        bullet.destroy(connectionPoint);
+        bullet.destroy(groundDirection);
+        bullet.destroy(rotationAxis);
+    }
+    dispose() {
+        const bullet = WasmModuleHolder.get();
+        bullet.destroy(this._rawVehicle);
+        bullet.destroy(this._defaultVehicleRaycaster);
+        bullet.destroy(this._vehicleTuning);
+    }
+    getChassisBody() {
+        return this._chassisBody;
+    }
+    setSteeringValue(index, angle) {
+        this._rawVehicle.setSteeringValue(angle, index);
+    }
+    applyEngineForce(index, force) {
+        this._rawVehicle.applyEngineForce(force, index);
+    }
+    setBrake(index, force) {
+        this._rawVehicle.setBrake(force, index);
+    }
+    getWheeTransforms() {
+        const bullet = WasmModuleHolder.get();
+        const allTransforms = [];
+        const interpolatedTransform = true;
+        const numWheels = this._rawVehicle.getNumWheels();
+        for (let ii = 0; ii < numWheels; ++ii) {
+            this._rawVehicle.updateWheelTransform(ii, interpolatedTransform);
+            const rawTransform = this._rawVehicle.getWheelTransformWS(ii);
+            const rawOrigin = rawTransform.getOrigin();
+            const rawRotation = rawTransform.getRotation();
+            allTransforms.push({
+                position: fromValues$1(rawOrigin.x(), rawOrigin.y(), rawOrigin.z()),
+                rotation: fromValues(rawRotation.x(), rawRotation.y(), rawRotation.z(), rawRotation.w()),
+            });
+            bullet.destroy(rawRotation);
+            bullet.destroy(rawOrigin);
+            bullet.destroy(rawTransform);
+        }
+        return allTransforms;
+    }
+}
+
 const DISABLE_DEACTIVATION = 4;
 class ConcretePhysicBody extends ContactEventHandler {
     constructor(def, rawShape) {
@@ -1023,74 +1164,6 @@ class ConcretePhysicBody extends ContactEventHandler {
     }
 }
 
-class ConcretePhysicVehicle {
-    constructor(rawDynamicsWorld, chassisBody, def) {
-        const bullet = WasmModuleHolder.get();
-        this._chassisBody = chassisBody;
-        this._vehicleTuning = new bullet.btVehicleTuning();
-        this._defaultVehicleRaycaster = new bullet.btDefaultVehicleRaycaster(rawDynamicsWorld);
-        this._rawVehicle = new bullet.btRaycastVehicle(this._vehicleTuning, chassisBody._rawRigidBody, this._defaultVehicleRaycaster);
-        this._rawVehicle.setCoordinateSystem(def.coordinateSystem[0], def.coordinateSystem[1], def.coordinateSystem[2]);
-        const groundDirection = new bullet.btVector3(def.groundDirection[0], def.groundDirection[1], def.groundDirection[2]);
-        const rotationAxis = new bullet.btVector3(def.rotationAxis[0], def.rotationAxis[1], def.rotationAxis[2]);
-        const connectionPoint = new bullet.btVector3();
-        for (let ii = 0; ii < def.wheels.length; ++ii) {
-            const current = def.wheels[ii];
-            connectionPoint.setValue(current.connectionPoint[0], current.connectionPoint[1], current.connectionPoint[2]);
-            const wheelInfo = this._rawVehicle.addWheel(connectionPoint, // connectionPointCS0,
-            groundDirection, // wheelDirectionCS0,
-            rotationAxis, // wheelAxleCS,
-            def.suspensionRestLength, def.wheelRadius, this._vehicleTuning, current.isFrontWheel);
-            wheelInfo.set_m_suspensionStiffness(def.suspensionStiffness);
-            wheelInfo.set_m_wheelsDampingRelaxation(def.wheelsDampingRelaxation);
-            wheelInfo.set_m_wheelsDampingCompression(def.wheelsDampingCompression);
-            wheelInfo.set_m_frictionSlip(def.wheelFriction);
-            wheelInfo.set_m_rollInfluence(def.rollInfluence);
-        }
-        bullet.destroy(connectionPoint);
-        bullet.destroy(groundDirection);
-        bullet.destroy(rotationAxis);
-    }
-    dispose() {
-        const bullet = WasmModuleHolder.get();
-        bullet.destroy(this._rawVehicle);
-        bullet.destroy(this._defaultVehicleRaycaster);
-        bullet.destroy(this._vehicleTuning);
-    }
-    getChassisBody() {
-        return this._chassisBody;
-    }
-    setSteeringValue(index, angle) {
-        this._rawVehicle.setSteeringValue(angle, index);
-    }
-    applyEngineForce(index, force) {
-        this._rawVehicle.applyEngineForce(force, index);
-    }
-    setBrake(index, force) {
-        this._rawVehicle.setBrake(force, index);
-    }
-    getWheeTransforms() {
-        const bullet = WasmModuleHolder.get();
-        const allTransforms = [];
-        const interpolatedTransform = true;
-        const numWheels = this._rawVehicle.getNumWheels();
-        for (let ii = 0; ii < numWheels; ++ii) {
-            this._rawVehicle.updateWheelTransform(ii, interpolatedTransform);
-            const rawTransform = this._rawVehicle.getWheelTransformWS(ii);
-            const rawOrigin = rawTransform.getOrigin();
-            const rawRotation = rawTransform.getRotation();
-            allTransforms.push({
-                position: fromValues$1(rawOrigin.x(), rawOrigin.y(), rawOrigin.z()),
-                rotation: fromValues(rawRotation.x(), rawRotation.y(), rawRotation.z(), rawRotation.w()),
-            });
-            bullet.destroy(rawRotation);
-            bullet.destroy(rawOrigin);
-            bullet.destroy(rawTransform);
-        }
-        return allTransforms;
-    }
-}
-
 class ConcreteHingeConstraint {
     constructor(def) {
         this._bodyA = def.bodyA;
@@ -1140,74 +1213,6 @@ class ConcreteHingeConstraint {
     }
     setMotorTarget(targetAngle, dt) {
         this._rawConstraint.setMotorTarget(targetAngle, dt);
-    }
-}
-
-// btGeneric6DofConstraint2
-var RotationOrder;
-(function (RotationOrder) {
-    RotationOrder[RotationOrder["XYZ"] = 0] = "XYZ";
-    RotationOrder[RotationOrder["XZY"] = 1] = "XZY";
-    RotationOrder[RotationOrder["YXZ"] = 2] = "YXZ";
-    RotationOrder[RotationOrder["YZX"] = 3] = "YZX";
-    RotationOrder[RotationOrder["ZXY"] = 4] = "ZXY";
-    RotationOrder[RotationOrder["ZYX"] = 5] = "ZYX";
-})(RotationOrder || (RotationOrder = {}));
-class ConcreteGeneric6DofConstraint2 {
-    constructor(def) {
-        this._bodyA = def.bodyA;
-        this._bodyB = def.bodyB;
-        const bullet = WasmModuleHolder.get();
-        const rawRigidBodyA = def.bodyA._rawRigidBody;
-        const rawRigidBodyB = def.bodyB._rawRigidBody;
-        const newRotation = new bullet.btQuaternion(0, 0, 1, 0);
-        const newPositionA = new bullet.btVector3(def.frameA[0], def.frameA[1], def.frameA[2]);
-        const newTransformA = new bullet.btTransform(newRotation, newPositionA);
-        const newPositionB = new bullet.btVector3(def.frameB[0], def.frameB[1], def.frameB[2]);
-        const newTransformB = new bullet.btTransform(newRotation, newPositionB);
-        this._rawConstraint = new bullet.bjtsGeneric6DofSpring2Constraint(rawRigidBodyA, rawRigidBodyB, newTransformA, newTransformB, def.rotationOrder);
-        this._rawConstraint.enableSpring(0, false);
-        this._rawConstraint.enableSpring(1, false);
-        this._rawConstraint.enableSpring(2, false);
-        this._rawConstraint.setStiffness(0, 1);
-        this._rawConstraint.setStiffness(1, 1);
-        this._rawConstraint.setStiffness(2, 1);
-        this._rawConstraint.setDamping(0, 1);
-        this._rawConstraint.setDamping(1, 1);
-        this._rawConstraint.setDamping(2, 1);
-        bullet.destroy(newTransformA);
-        bullet.destroy(newTransformB);
-        bullet.destroy(newPositionA);
-        bullet.destroy(newPositionB);
-        bullet.destroy(newRotation);
-    }
-    dispose() {
-        const bullet = WasmModuleHolder.get();
-        bullet.destroy(this._rawConstraint);
-    }
-    setLinearLowerLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setLinearLowerLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setLinearUpperLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setLinearUpperLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setAngularLowerLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setAngularLowerLimit(newVal);
-        bullet.destroy(newVal);
-    }
-    setAngularUpperLimit(val) {
-        const bullet = WasmModuleHolder.get();
-        const newVal = new bullet.btVector3(val[0], val[1], val[2]);
-        this._rawConstraint.setAngularUpperLimit(newVal);
-        bullet.destroy(newVal);
     }
 }
 
@@ -1406,7 +1411,7 @@ class PhysicWorld extends ContactEventHandler {
                     cleanup: () => {
                         bullet.destroy(rawCompound);
                         for (const currRawShape of allRawShapes) {
-                            bullet.destroy(currRawShape);
+                            currRawShape.cleanup();
                         }
                     },
                 };
@@ -1598,29 +1603,45 @@ class PhysicWorld extends ContactEventHandler {
     }
     destroyGeneric6DofConstraint2(constraint) {
         const concrete = constraint;
-        this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
-        // remove constraints from the map value (bodyA)
-        const bodyListA = this._constraintMap3.get(concrete._bodyA._rawRigidBody.ptr);
-        if (bodyListA) {
-            // find the constraint and remove it
-            const index = bodyListA.indexOf(concrete);
-            if (index >= 0) {
-                bodyListA.splice(index, 0);
-            }
-        }
-        // remove constraints from the map (bodyB)
-        const bodyListB = this._constraintMap3.get(concrete._bodyB._rawRigidBody.ptr);
-        if (bodyListB) {
-            // find the constraint and remove it
-            const index = bodyListB.indexOf(concrete);
-            if (index >= 0) {
-                bodyListB.splice(index, 0);
-            }
+        if (!concrete.isAlive()) {
+            return;
         }
         // remove from list of all constraints
         const index = this._allConstraints3.indexOf(concrete);
-        if (index >= 0) {
-            this._allConstraints3.splice(index, 0);
+        if (index < 0) {
+            // already disposed of -> skip
+            // -> possible if one of the bodies was destroyed first
+            return;
+        }
+        this._allConstraints3.splice(index, 0);
+        this._rawDynamicsWorld.removeConstraint(concrete._rawConstraint);
+        // remove constraints from the map value (bodyA)
+        const concreteBodyA = concrete._bodyA;
+        if (concreteBodyA.isAlive()) {
+            const bodyA_ptr = concreteBodyA._rawRigidBody.ptr;
+            const bodyListA = this._constraintMap3.get(bodyA_ptr);
+            if (bodyListA) {
+                this._constraintMap3.delete(bodyA_ptr);
+                // find the constraint and remove it
+                const index = bodyListA.indexOf(concrete);
+                if (index >= 0) {
+                    bodyListA.splice(index, 0);
+                }
+            }
+        }
+        // remove constraints from the map (bodyB)
+        const concreteBodyB = concrete._bodyB;
+        if (concreteBodyB.isAlive()) {
+            const bodyB_ptr = concreteBodyB._rawRigidBody.ptr;
+            const bodyListB = this._constraintMap3.get(bodyB_ptr);
+            if (bodyListB) {
+                this._constraintMap3.delete(bodyB_ptr);
+                // find the constraint and remove it
+                const index = bodyListB.indexOf(concrete);
+                if (index >= 0) {
+                    bodyListB.splice(index, 0);
+                }
+            }
         }
         concrete.dispose();
     }
@@ -1768,7 +1789,6 @@ var DebugDrawFlags;
 
 var index = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    ConcretePhysicBody: ConcretePhysicBody,
     ConcretePhysicVehicle: ConcretePhysicVehicle,
     ContactEventHandler: ContactEventHandler,
     get DebugDrawFlags () { return DebugDrawFlags; },

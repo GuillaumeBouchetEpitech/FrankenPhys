@@ -28,10 +28,6 @@ export function renderDynamicBox(scene: THREE.Scene, physicWorld: physics.Physic
 
   const material = getTextureMaterial();
 
-  // const geometry = new THREE.BoxGeometry( 2.0, 2.0, 2.0 );
-  // // const mesh = new THREE.Mesh( geometry, material );
-  // // mesh.castShadow = true;
-  // // mesh.receiveShadow = true;
   const mesh = makeCellShadedBoxGeometry([2,2,2], material);
   scene.add( mesh );
 

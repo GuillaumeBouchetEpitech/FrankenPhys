@@ -32,11 +32,6 @@ export function renderDynamicCapsule(scene: THREE.Scene, physicWorld: physics.Ph
 
   const material = getTextureMaterial();
 
-  // const geometry = new THREE.CapsuleGeometry(radius, length, 4, 8 );
-  // // const mesh = new THREE.Mesh( geometry, material );
-  // // mesh.castShadow = true;
-  // // mesh.receiveShadow = true;
-  // const mesh = makeCellShadedGeometry(geometry, material);
   const mesh = makeCellShadedCapsuleGeometry(radius, length, 4, 8, material);
   scene.add( mesh );
 
