@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 import * as glm from "gl-matrix";
 
-import { getTextureMaterial, getBackSideMaterial } from "./getTextureMaterial";
+import { getTextureMaterial, getBackSideMaterial, getBackSideMaterial3, getBackSideMaterial2 } from "./getTextureMaterial";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 import { makeCellShadedBoxGeometry } from "samples/browser-test-bed/src/internals/makeCellShadedGeometry";
 
@@ -92,20 +92,21 @@ export function renderRopeWithDynamicConstrainedBox(scene: THREE.Scene, physicWo
   _makeConstraint(bodyD, bodyE);
 
   const material = getTextureMaterial();
+  const backSideMaterial2 = getBackSideMaterial2();
 
-  const objectA = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  const objectA = makeCellShadedBoxGeometry([2, 0.5, 1], material, backSideMaterial2);
   scene.add(objectA);
 
-  const objectB = makeCellShadedBoxGeometry([2, 1, 0.5], material, 0.05);
+  const objectB = makeCellShadedBoxGeometry([2, 1, 0.5], material, backSideMaterial2);
   scene.add(objectB);
 
-  const objectC = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  const objectC = makeCellShadedBoxGeometry([2, 0.5, 1], material, backSideMaterial2);
   scene.add(objectC);
 
-  const objectD = makeCellShadedBoxGeometry([2, 1, 0.5], material, 0.05);
+  const objectD = makeCellShadedBoxGeometry([2, 1, 0.5], material, backSideMaterial2);
   scene.add(objectD);
 
-  const objectE = makeCellShadedBoxGeometry([2, 0.5, 1], material, 0.05);
+  const objectE = makeCellShadedBoxGeometry([2, 0.5, 1], material, backSideMaterial2);
   scene.add(objectE);
 
   return function syncDynamicBoxMesh() {

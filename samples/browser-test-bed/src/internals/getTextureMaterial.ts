@@ -68,3 +68,29 @@ export function getBackSideMaterial() {
 
   return backSideMaterial;
 }
+
+let backSideMaterial2: undefined | THREE.Material;
+export function getBackSideMaterial2() {
+
+  if (backSideMaterial2) {
+    return backSideMaterial2;
+  }
+
+  backSideMaterial2 = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.BackSide });
+  // backSideMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.BackSide });
+
+  return backSideMaterial2;
+}
+
+let backSideMaterial3: undefined | THREE.Material;
+export function getBackSideMaterial3() {
+
+  if (backSideMaterial3) {
+    return backSideMaterial3;
+  }
+
+  backSideMaterial3 = new THREE.MeshBasicMaterial({ color: 0x00FF00, side: THREE.BackSide });
+  // backSideMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.BackSide });
+
+  return backSideMaterial3;
+}

@@ -6,12 +6,14 @@ import { getBackSideMaterial } from "./getTextureMaterial";
 export const makeCellShadedBoxGeometry = (
   boxSize: [number, number, number],
   material: THREE.Material,
-  customScale: number = 0.05,
+  backMaterial?: THREE.Material,
 ): THREE.Object3D => {
 
-  const backMaterial = getBackSideMaterial();
+  if (!backMaterial) {
+    backMaterial = getBackSideMaterial();
+  }
 
-  const frontGeo = new THREE.BoxGeometry(boxSize[0] - customScale*2, boxSize[1] - customScale*2, boxSize[2] - customScale*2);
+  const frontGeo = new THREE.BoxGeometry(boxSize[0] - 0.05, boxSize[1] - 0.05, boxSize[2] - 0.05);
   const backGeo = new THREE.BoxGeometry(boxSize[0], boxSize[1], boxSize[2]);
 
   const object = new THREE.Object3D();
@@ -32,9 +34,12 @@ export const makeCellShadedBoxGeometry = (
 export const makeCellShadedSphereGeometry = (
   radius: number,
   material: THREE.Material,
+  backMaterial?: THREE.Material,
 ): THREE.Object3D => {
 
-  const backMaterial = getBackSideMaterial();
+  if (!backMaterial) {
+    backMaterial = getBackSideMaterial();
+  }
 
   const frontGeo = new THREE.SphereGeometry(radius - 0.05);
   const backGeo = new THREE.SphereGeometry(radius);
@@ -60,10 +65,12 @@ export const makeCellShadedCapsuleGeometry = (
   capSegments: number,
   radialSegments: number,
   material: THREE.Material,
-  // customScale: number = 0.05,
+  backMaterial?: THREE.Material,
 ): THREE.Object3D => {
 
-  const backMaterial = getBackSideMaterial();
+  if (!backMaterial) {
+    backMaterial = getBackSideMaterial();
+  }
 
   const frontGeo = new THREE.CapsuleGeometry(radius - 0.05, length - 0.05, capSegments, radialSegments);
   const backGeo = new THREE.CapsuleGeometry(radius, length, capSegments, radialSegments);
@@ -90,9 +97,12 @@ export const makeCellShadedCylinderGeometry = (
   radialSegments: number,
   heightSegments: number,
   material: THREE.Material,
+  backMaterial?: THREE.Material,
 ): THREE.Object3D => {
 
-  const backMaterial = getBackSideMaterial();
+  if (!backMaterial) {
+    backMaterial = getBackSideMaterial();
+  }
 
   const frontGeo = new THREE.CylinderGeometry(radiusTop - 0.05, radiusBottom - 0.05, height - 0.05, radialSegments, heightSegments);
   const backGeo = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments);
@@ -116,15 +126,17 @@ export const makeCellShadedCylinderGeometry = (
 export const makeCellShadedGeometry = (
   inGeo: THREE.BufferGeometry,
   material: THREE.Material,
-  customScale: number = 0.05,
+  backMaterial?: THREE.Material,
 ): THREE.Object3D => {
 
-  const backMaterial = getBackSideMaterial();
+  if (!backMaterial) {
+    backMaterial = getBackSideMaterial();
+  }
 
   const frontGeo = inGeo.clone();
   const backGeo = inGeo.clone();
 
-  frontGeo.scale(1-customScale*2, 1-customScale*2, 1-customScale*2);
+  frontGeo.scale(1-0.05, 1-0.05, 1-0.05);
   backGeo.scale(1, 1, 1);
 
   const object = new THREE.Object3D();

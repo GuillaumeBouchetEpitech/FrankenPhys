@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 import { makeCellShadedBoxGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial2, getTextureMaterial } from "./getTextureMaterial";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
 
@@ -20,24 +20,27 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
   const toSync: ((deltaTimeSec: number) => void)[] = [];
 
   const material = getTextureMaterial();
+  const backSideMaterial2 = getBackSideMaterial2();
 
-  const bodyStaticGround = physicWorld.createRigidBody({
-    mass: 0,
-    shape: {
-      type: 'box',
-      size: [20,20,1]
-    },
-    position: [originX,originY, 0],
-    orientation: [0, 0,0,1]
-  });
-  bodyStaticGround.setFriction(10.0);
+  {
+    const bodyStaticGround = physicWorld.createRigidBody({
+      mass: 0,
+      shape: {
+        type: 'box',
+        size: [20,20,1]
+      },
+      position: [originX,originY, 0],
+      orientation: [0, 0,0,1]
+    });
+    bodyStaticGround.setFriction(10.0);
 
-  const boxMeshStaticGround = makeCellShadedBoxGeometry([ 20.0, 20.0, 1.0 ], material)
-  scene.add( boxMeshStaticGround );
+    const boxMeshStaticGround = makeCellShadedBoxGeometry([ 20.0, 20.0, 1.0 ], material)
+    scene.add( boxMeshStaticGround );
 
-  toSync.push(() => {
-    syncMeshWithRigidBody(boxMeshStaticGround, bodyStaticGround);
-  });
+    toSync.push(() => {
+      syncMeshWithRigidBody(boxMeshStaticGround, bodyStaticGround);
+    });
+  }
 
   //
   //
@@ -61,7 +64,7 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
   bodyMain.setFriction(10.0);
   bodyMain.disableDeactivation();
 
-  const meshMain = makeCellShadedBoxGeometry([mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]], material)
+  const meshMain = makeCellShadedBoxGeometry([mainBoxSize[0], mainBoxSize[1], mainBoxSize[2]], material, backSideMaterial2)
   scene.add( meshMain );
 
   toSync.push(() => {
@@ -192,22 +195,22 @@ export function renderQuadrupedWithHingeConstrainedBoxes(scene: THREE.Scene, phy
     constraintLegForeleg.enableMotor(true);
     constraintLegForeleg.setMaxMotorImpulse(20);
 
-    const meshBaseLeg = makeCellShadedBoxGeometry([ 1.0, 1.0, 1.0 ], material)
+    const meshBaseLeg = makeCellShadedBoxGeometry([ 1.0, 1.0, 1.0 ], material, backSideMaterial2)
     scene.add( meshBaseLeg );
 
-    const meshLeg = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material)
+    const meshLeg = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material, backSideMaterial2)
     scene.add( meshLeg );
 
     const meshLegForeleg = new THREE.Object3D();
     scene.add( meshLegForeleg );
 
-    const meshX = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material)
+    const meshX = makeCellShadedBoxGeometry([ 2.0, 0.5, 0.5 ], material, backSideMaterial2)
     const subObjX = new THREE.Object3D();
     subObjX.position.set(0,0,0);
     subObjX.add(meshX);
     meshLegForeleg.add( subObjX );
 
-    const meshFoot1 = makeCellShadedBoxGeometry([ 0.25, 0.25, 0.25 ], material)
+    const meshFoot1 = makeCellShadedBoxGeometry([ 0.25, 0.25, 0.25 ], material, backSideMaterial2)
     const subObjFoot1 = new THREE.Object3D();
     subObjFoot1.position.set(isBackLeg ? -1 : +1,0,0);
     subObjFoot1.quaternion.set(1,0,0, 0.5 * Math.PI);

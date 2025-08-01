@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial3, getTextureMaterial } from "./getTextureMaterial";
 import { makeCellShadedCapsuleGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -31,8 +31,9 @@ export function renderDynamicCapsule(scene: THREE.Scene, physicWorld: physics.Ph
   body.disableDeactivation();
 
   const material = getTextureMaterial();
+  const backSideMaterial3 = getBackSideMaterial3();
 
-  const mesh = makeCellShadedCapsuleGeometry(radius, length, 4, 8, material);
+  const mesh = makeCellShadedCapsuleGeometry(radius, length, 4, 8, material, backSideMaterial3);
   scene.add( mesh );
 
   return function syncDynamicCapsuleMesh() {

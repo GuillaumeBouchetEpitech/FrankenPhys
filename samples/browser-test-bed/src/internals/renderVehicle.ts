@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 import * as glm from "gl-matrix";
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial2, getBackSideMaterial3, getTextureMaterial } from "./getTextureMaterial";
 import { makeCellShadedBoxGeometry, makeCellShadedCylinderGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -72,15 +72,23 @@ export function renderVehicle(scene: THREE.Scene, physicWorld: physics.PhysicWor
   dynamicVehicle.applyEngineForce(3, 40); // rear wheel
 
   const material = getTextureMaterial();
+  const backSideMaterial3 = getBackSideMaterial3();
 
-  const vehicleMesh = makeCellShadedBoxGeometry([2.0, 4.0, 1.0], material);
+  const vehicleMesh = makeCellShadedBoxGeometry([2.0, 4.0, 1.0], material, backSideMaterial3);
   scene.add( vehicleMesh );
 
   const wheelsMesh: THREE.Object3D[] = [];
   {
     for (let ii = 0; ii < vehicleDef.wheels.length; ++ii) {
 
-      const wheelGeometry = makeCellShadedCylinderGeometry(vehicleDef.wheelRadius, vehicleDef.wheelRadius, vehicleDef.wheelWidth, 20, 1, material);
+      const wheelGeometry = makeCellShadedCylinderGeometry(
+        vehicleDef.wheelRadius,
+        vehicleDef.wheelRadius,
+        vehicleDef.wheelWidth,
+        20, 1,
+        material,
+        backSideMaterial3
+      );
       wheelGeometry.children.forEach((childGeo) => {
         childGeo.rotateZ(Math.PI * 0.5);
       })

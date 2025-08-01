@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial3, getTextureMaterial } from "./getTextureMaterial";
 import { makeCellShadedBoxGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -57,22 +57,23 @@ export function renderDynamicCompound(scene: THREE.Scene, physicWorld: physics.P
   //
 
   const material = getTextureMaterial();
+  const backSideMaterial3 = getBackSideMaterial3();
 
   const mainObj = new THREE.Object3D();
 
-  const meshX = makeCellShadedBoxGeometry([4,1,1], material);
+  const meshX = makeCellShadedBoxGeometry([4,1,1], material, backSideMaterial3);
   const subObjX = new THREE.Object3D();
   subObjX.position.set(1,0,0);
   subObjX.add(meshX);
   mainObj.add( subObjX );
 
-  const meshY = makeCellShadedBoxGeometry([1,4,1], material);
+  const meshY = makeCellShadedBoxGeometry([1,4,1], material, backSideMaterial3);
   const subObjY = new THREE.Object3D();
   subObjY.position.set(0,1,0);
   subObjY.add(meshY);
   mainObj.add( subObjY );
 
-  const meshZ = makeCellShadedBoxGeometry([1,1,4], material);
+  const meshZ = makeCellShadedBoxGeometry([1,1,4], material, backSideMaterial3);
   const subObjZ = new THREE.Object3D();
   subObjZ.position.set(0,0,1);
   subObjZ.add(meshZ);

@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial3, getTextureMaterial } from "./getTextureMaterial";
 import { makeCellShadedBoxGeometry, makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -27,8 +27,9 @@ export function renderDynamicBox(scene: THREE.Scene, physicWorld: physics.Physic
   body.disableDeactivation();
 
   const material = getTextureMaterial();
+  const backSideMaterial3 = getBackSideMaterial3();
 
-  const mesh = makeCellShadedBoxGeometry([2,2,2], material);
+  const mesh = makeCellShadedBoxGeometry([2,2,2], material, backSideMaterial3);
   scene.add( mesh );
 
   let timeLeft = 10;

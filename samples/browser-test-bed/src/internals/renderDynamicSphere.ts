@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 
-import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial3, getTextureMaterial } from "./getTextureMaterial";
 import { makeCellShadedGeometry, makeCellShadedSphereGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -27,8 +27,9 @@ export function renderDynamicSphere(scene: THREE.Scene, physicWorld: physics.Phy
   body.disableDeactivation();
 
   const material = getTextureMaterial();
+  const backSideMaterial3 = getBackSideMaterial3();
 
-  const mesh = makeCellShadedSphereGeometry(1.0, material);
+  const mesh = makeCellShadedSphereGeometry(1.0, material, backSideMaterial3);
 
   scene.add( mesh );
 

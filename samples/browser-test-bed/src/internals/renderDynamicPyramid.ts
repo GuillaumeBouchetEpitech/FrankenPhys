@@ -7,7 +7,7 @@ import * as THREE from "three";
 import * as glm from "gl-matrix";
 
 
-// import { getTextureMaterial } from "./getTextureMaterial";
+import { getBackSideMaterial3 } from "./getTextureMaterial";
 import { makeCellShadedGeometry } from "./makeCellShadedGeometry";
 import { syncMeshWithRigidBody } from "./syncMeshWithRigidBody";
 
@@ -84,10 +84,8 @@ export function renderDynamicPyramid(scene: THREE.Scene, physicWorld: physics.Ph
   pyGeometry.setAttribute('position', new THREE.BufferAttribute(geoVertices, 3));
   pyGeometry.setAttribute('normal', new THREE.BufferAttribute(geoNormal, 3));
 
-  // const mesh = new THREE.Mesh(pyGeometry, redMaterial);
-  // mesh.castShadow = true;
-  // mesh.receiveShadow = true;
-  const mesh = makeCellShadedGeometry(pyGeometry, redMaterial, 0.025);
+  const backSideMaterial3 = getBackSideMaterial3();
+  const mesh = makeCellShadedGeometry(pyGeometry, redMaterial, backSideMaterial3);
   scene.add( mesh );
 
   return function syncDynamicPyramidMesh() {
